@@ -1,15 +1,18 @@
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int MOD = (int)1e9 + 7;
+    auto const MOD = int(1e9) + 7;
 
-    int n;
-    scanf("%d", &n);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
+    auto n = int();
+    std::cin >> n;
 
     // ans = 2^n
     // (ref.) [Binary Exponentiation](https://cp-algorithms.com/algebra/binary-exp.html)
-    long ans = 1;
-    long step = 2;
+    auto ans = 1L;
+    auto step = 2L;
     while (n > 0) {
         if (n & 1) {
             ans = (ans * step) % MOD;
@@ -17,5 +20,5 @@ int main() {
         step = (step * step) % MOD;
         n >>= 1;
     }
-    printf("%ld\n", ans);
+    std::cout << ans << '\n';
 }

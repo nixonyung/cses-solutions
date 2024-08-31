@@ -1,28 +1,36 @@
 #include <algorithm>
 #include <cmath>
-#include <cstdio>
+#include <iostream>
+#include <vector>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    int ps[20];
-    long sum1 = 0;
-    long sum2 = 0;
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &ps[i]);
-        sum1 += ps[i];
+    auto n = int();
+    std::cin >> n;
+
+    auto ps = std::vector<int>(n);
+    for (auto &p : ps) {
+        std::cin >> p;
     }
 
     /*
     solve by enumerating all possible bitmasks:
         for the k-th bit in the bitmask, if the bit == 0, assign pk to group 1, else to group 2
     */
-    long ans = sum1;
-    int bitmask = 0;
+
+    auto sum1 = long();
+    auto sum2 = 0L;
+    for (auto const &p : ps) {
+        sum1 += p;
+    }
+
+    auto ans = sum1;
+    auto bitmask = 0;
     // using "iterative Gray code" as an optimization
-    for (int i = 1; i < (1 << n) - 1; i++) {
-        int p_idx = __builtin_ctz(i);
+    for (auto i = 1; i < (1 << n); i++) {
+        auto p_idx = __builtin_ctz(i);
         bitmask ^= 1 << p_idx;
         if (bitmask & (1 << p_idx)) {
             sum2 += ps[p_idx];
@@ -31,7 +39,7 @@ int main() {
             sum1 += ps[p_idx];
             sum2 -= ps[p_idx];
         }
-        ans = std::min(ans, abs(sum1 - sum2));
+        ans = std::min(ans, std::abs(sum1 - sum2));
     }
-    printf("%ld\n", ans);
+    std::cout << ans << '\n';
 }

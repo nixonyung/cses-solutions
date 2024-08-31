@@ -1,15 +1,18 @@
 #include <algorithm>
-#include <cstdio>
+#include <iostream>
+#include <string>
 
 int main() {
-    char s[(int)1e6 + 1];
-    int s_len;
-    scanf("%s%n", s, &s_len);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    int ans = 1;
-    char curr_ch = s[0];
-    int curr_len = 1;
-    for (int i = 1; i < s_len; i++) {
+    auto s = std::string();
+    std::cin >> s;
+
+    auto ans = 1;
+    auto curr_ch = s[0];
+    auto curr_len = 1;
+    for (auto i = 1; i < s.size(); i++) {
         if (s[i] == curr_ch) {
             curr_len++;
         } else {
@@ -21,5 +24,5 @@ int main() {
         }
     }
     ans = std::max(ans, curr_len);
-    printf("%d\n", ans);
+    std::cout << ans << '\n';
 }

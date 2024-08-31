@@ -1,25 +1,28 @@
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
+    auto n = int();
+    std::cin >> n;
 
     // hard-coded solutions for n <= 3
     if (n == 1) {
-        printf("1\n");
+        std::cout << "1\n";
         return 0;
     }
     if (n == 2 || n == 3) {
-        printf("NO SOLUTION\n");
+        std::cout << "NO SOLUTION\n";
         return 0;
     }
 
     // solution: enumerate even numbers increasingly, then enumerate odd numbers increasingly
-    for (int i = 2; i <= n; i += 2) {
-        printf("%d ", i);
+    for (auto i = 2; i <= n; i += 2) {
+        std::cout << i << ' ';
     }
-    for (int i = 1; i <= n; i += 2) {
-        printf("%d ", i);
+    for (auto i = 1; i <= n; i += 2) {
+        std::cout << i << ' ';
     }
-    printf("\n");
+    std::cout << '\n';
 }

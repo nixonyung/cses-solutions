@@ -1,14 +1,11 @@
+#include "../../lib/cses_io.hpp"
 #include <algorithm>
-#include <cstdio>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    cses::enable_fast_io();
 
-    int xs[(int)2e5];
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &xs[i]);
-    }
+    auto n = cses::read<int>();
+    auto xs = cses::read_vector<int>(n);
 
     /*
     observe this:
@@ -32,15 +29,15 @@ int main() {
 
     // greedy solution: try to pick the smallest `x`
 
-    std::sort(xs, xs + n);
+    std::ranges::sort(xs);
 
-    long max_sum = 0;
-    for (int i = 0; i < n; i++) {
+    auto max_sum = 0L;
+    for (auto i = 0; i < n; i++) {
         if (xs[i] > max_sum + 1) {
-            printf("%ld\n", max_sum + 1);
+            std::cout << max_sum + 1 << '\n';
             return 0;
         }
         max_sum += xs[i];
     }
-    printf("%ld\n", max_sum + 1);
+    std::cout << max_sum + 1 << '\n';
 }

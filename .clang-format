@@ -1,9 +1,17 @@
+# emulating a mix of black and gofmt
+
 BasedOnStyle: LLVM
 ColumnLimit: 0
 IndentWidth: 4
 AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Left
 AlignOperands: Align
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossComments: true
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossComments: true
 AllowAllArgumentsOnNextLine: false
 BinPackArguments: false
 BinPackParameters: false

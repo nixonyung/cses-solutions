@@ -1,18 +1,21 @@
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    int xorsum = 0;
-    for (int i = 1; i <= n; i++) {
+    auto n = long();
+    std::cin >> n;
+
+    auto xorsum = 0;
+    for (auto i = 1; i <= n; i++) {
         xorsum ^= i;
     }
 
-    for (int i = 0; i < n - 1; i++) {
-        int x;
-        scanf("%d", &x);
+    for (auto i = 0; i < n - 1; i++) {
+        auto x = int();
+        std::cin >> x;
         xorsum ^= x;
     }
-    printf("%d\n", xorsum);
+    std::cout << xorsum << '\n';
 }

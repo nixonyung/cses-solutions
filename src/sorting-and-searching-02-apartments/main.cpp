@@ -1,38 +1,33 @@
+#include "../../lib/cses_io.hpp"
 #include <algorithm>
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int n, m, k;
-    scanf("%d %d %d", &n, &m, &k);
+    cses::enable_fast_io();
 
-    int as[(int)2e5];
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &as[i]);
-    }
-
-    int bs[(int)2e5];
-    for (int i = 0; i < m; i++) {
-        scanf("%d", &bs[i]);
-    }
+    auto [n, m, k] = cses::read_tuple<std::size_t, std::size_t, std::size_t>();
+    auto as = cses::read_vector<int>(n);
+    auto bs = cses::read_vector<int>(n);
 
     // greedy solution: at each step, try to pick the smallest `a` and the smallest `b`
+    std::ranges::sort(as);
+    std::ranges::sort(bs);
 
-    std::sort(as, as + n);
-    std::sort(bs, bs + m);
-
-    int ans = 0;
-    int a_idx = 0;
-    int b_idx = 0;
-    while (a_idx < n && b_idx < m) {
-        if (as[a_idx] + k < bs[b_idx]) {
-            a_idx++;
-        } else if (bs[b_idx] + k < as[a_idx]) {
-            b_idx++;
-        } else {
-            ans++;
-            a_idx++;
-            b_idx++;
+    auto ans = 0;
+    {
+        auto a_idx = 0;
+        auto b_idx = 0;
+        while (a_idx < n && b_idx < m) {
+            if (as[a_idx] + k < bs[b_idx]) {
+                a_idx++;
+            } else if (bs[b_idx] + k < as[a_idx]) {
+                b_idx++;
+            } else {
+                ans++;
+                a_idx++;
+                b_idx++;
+            }
         }
     }
-    printf("%d\n", ans);
+    std::cout << ans << '\n';
 }

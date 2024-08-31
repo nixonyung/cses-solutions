@@ -3,180 +3,84 @@
 
 #define VERSION VERSION_FENWICK_TREE
 
+#include "../../lib/cses_io.hpp"
 #if VERSION == VERSION_FENWICK_TREE
-#include <algorithm>
-#include <cstdio>
-
-// (ref.) [Fenwick Tree - Implementation](https://cp-algorithms.com/data_structures/fenwick.html#implementation)
-template <size_t N>
-struct FenwickTree {
-    int vals[N];
-    int n;
-
-    FenwickTree(int n) {
-        this->n = n;
-        this->clear();
-    }
-
-    void clear() {
-        std::fill_n(vals, n, 0);
-    }
-
-    void update(int pos, int delta) {
-        for (; pos < n; pos = pos | (pos + 1)) {
-            vals[pos] += delta;
-        }
-    }
-
-    int prefix_sum(int pos) {
-        int sum = 0;
-        for (; pos >= 0; pos = (pos & (pos + 1)) - 1) {
-            sum += vals[pos];
-        }
-        return sum;
-    }
-};
-
-int main() {
-    constexpr int MAX_N = (int)2e5;
-
-    int n;
-    scanf("%d", &n);
-
-    // (ref.) <https://github.com/Jonathan-Uy/CSES-Solutions/blob/main/Sorting%20and%20Searching/Nested%20Ranges%20Count.cpp> (main idea)
-    // (ref.) <https://cses.fi/problemset/hack/2169/entry/7621796/> (optimization: using Structure of Arrays)
-
-    int xs[MAX_N], ys[MAX_N];
-    for (int i = 0; i < n; i++) {
-        std::scanf("%d %d", &xs[i], &ys[i]);
-    }
-
-    int index_to_y_ordering[MAX_N];
-    {
-        int indexs_ordered_by_y[MAX_N];
-        for (int i = 0; i < n; i++) {
-            indexs_ordered_by_y[i] = i;
-        }
-        std::sort(
-            indexs_ordered_by_y,
-            indexs_ordered_by_y + n,
-            [&ys](const auto &lhs, const auto &rhs) {
-                return ys[lhs] < ys[rhs];
-            }
-        );
-
-        int y_ordering = 0;
-        index_to_y_ordering[indexs_ordered_by_y[0]] = y_ordering;
-        for (int i = 1; i < n; i++) {
-            if (ys[indexs_ordered_by_y[i]] > ys[indexs_ordered_by_y[i - 1]]) {
-                y_ordering++;
-            }
-            index_to_y_ordering[indexs_ordered_by_y[i]] = y_ordering;
-        }
-    }
-
-    int indexs[MAX_N];
-    for (int i = 0; i < n; i++) {
-        indexs[i] = i;
-    }
-    std::sort(
-        indexs,
-        indexs + n,
-        [&xs, &ys](const auto &lhs, const auto &rhs) {
-            return (xs[lhs] != xs[rhs]) ? xs[lhs] < xs[rhs]
-                                        : ys[lhs] > ys[rhs];
-        }
-    );
-
-    int ans[MAX_N];
-    FenwickTree<MAX_N> tree(n);
-    for (int i = n - 1; i >= 0; i--) {
-        int y_ordering = index_to_y_ordering[indexs[i]];
-        ans[indexs[i]] = tree.prefix_sum(y_ordering);
-        tree.update(y_ordering, 1);
-    }
-    for (int i = 0; i < n; i++) {
-        std::printf("%d ", ans[i]);
-    }
-    std::printf("\n");
-
-    tree.clear();
-    for (int i = 0; i < n; i++) {
-        int y_ordering = index_to_y_ordering[indexs[i]];
-        ans[indexs[i]] = i - tree.prefix_sum(y_ordering - 1);
-        tree.update(y_ordering, 1);
-    }
-    for (int i = 0; i < n; i++) {
-        std::printf("%d ", ans[i]);
-    }
-    std::printf("\n");
-}
+#include "../../lib/fenwick_tree.hpp"
+#include "../../lib/utils.hpp"
 #elif VERSION == VERSION_ORDERED_SET
+#include "../../lib/ordered_set.hpp"
+#endif
 #include <algorithm>
-#include <array>
-#include <cstdio>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-
-template <typename T, typename CompareFn = std::less<>>
-using ordered_set = __gnu_pbds::tree<
-    T,
-    __gnu_pbds::null_type,
-    CompareFn,
-    __gnu_pbds::rb_tree_tag,
-    __gnu_pbds::tree_order_statistics_node_update>;
+#include <iostream>
 
 struct Input {
-    int x;
-    int y;
-    int index;
+    std::size_t x;
+    std::size_t y;
+
+    friend std::istream &operator>>(std::istream &in, Input &input) {
+        return in >> input.x >> input.y;
+    }
 };
 
 int main() {
-    constexpr int MAX_N = (int)2e5;
+    cses::enable_fast_io();
 
-    int n;
-    std::scanf("%d", &n);
+    auto n = cses::read<int>();
 
-    // (ref.) [Counting Nested Ranges](https://stackoverflow.com/questions/78282577/counting-nested-ranges)
+    // (ref.) <https://github.com/Jonathan-Uy/CSES-Solutions/blob/main/Sorting%20and%20Searching/Nested%20Ranges%20Count.cpp>
+    // (ref.) <https://cses.fi/problemset/hack/2169/entry/7621796/>
 
-    Input inputs[MAX_N];
-    for (int i = 0; i < n; i++) {
-        std::scanf("%d %d", &inputs[i].x, &inputs[i].y);
-        inputs[i].index = i;
-    }
+    auto inputs = cses::read_vector_with_ids<Input>(n);
 
-    std::sort(
+#if VERSION == VERSION_FENWICK_TREE
+    auto id_to_y_order = order_of_elements(
         inputs,
-        inputs + n,
-        [](const auto &lhs, const auto &rhs) {
-            return (lhs.x != rhs.x) ? (lhs.x < rhs.x)
-                                    : (lhs.y > rhs.y);
+        [](auto const &input) { return input.val.y; }
+    );
+#endif
+
+    std::ranges::sort(
+        inputs,
+        [](auto const &lhs, auto const &rhs) {
+            return (lhs.val.x != rhs.val.x) ? (lhs.val.x < rhs.val.x)
+                                            : (lhs.val.y > rhs.val.y);
         }
     );
 
-    // solving the first line of outputs: how many other ranges a range contains
-    int anss[MAX_N];
-    // __gnu_pbds does not provide ordered_multiset, so use tuple as the element type to emulate uniqueness
-    ordered_set<std::tuple<int, int>> ys; // ys[i] = {inputs[i].y, inputs[i].index}
-    for (int i = n - 1; i >= 0; i--) {
-        anss[inputs[i].index] = ys.order_of_key({inputs[i].y, n});
-        ys.insert({inputs[i].y, inputs[i].index});
-    }
-    for (int i = 0; i < n; i++) {
-        std::printf("%d ", anss[i]);
-    }
-    std::printf("\n");
+    auto anss = std::vector<std::size_t>(n);
 
-    // solving the second line of outputs: how many other ranges contains the range
-    ys.clear();
-    for (int i = 0; i < n; i++) {
-        anss[inputs[i].index] = i - ys.order_of_key({inputs[i].y, -1});
-        ys.insert({inputs[i].y, inputs[i].index});
+#if VERSION == VERSION_FENWICK_TREE
+    auto tree = FenwickTree<std::size_t>(n);
+
+    for (int i = n - 1; i >= 0; i--) {
+        anss[inputs[i].id] = tree.prefix_sum(id_to_y_order[inputs[i].id]);
+        tree.update_at(id_to_y_order[inputs[i].id], 1);
     }
+    cses::print_range(anss);
+
+    tree.clear();
+
     for (int i = 0; i < n; i++) {
-        std::printf("%d ", anss[i]);
+        anss[inputs[i].id] = i - tree.prefix_sum(id_to_y_order[inputs[i].id] - 1);
+        tree.update_at(id_to_y_order[inputs[i].id], 1);
     }
-    std::printf("\n");
-}
+    cses::print_range(anss);
+#elif VERSION == VERSION_ORDERED_SET
+    // __gnu_pbds does not provide ordered_multiset, so use tuple as the element type to ensure uniqueness of each `y`
+    auto ys_ordered = OrderedSet<std::tuple<std::size_t, std::make_signed_t<std::size_t>>>(); // ys_ordered[i] = {inputs[i].val.y, inputs[i].id}
+
+    for (int i = n - 1; i >= 0; i--) {
+        anss[inputs[i].id] = ys_ordered.order_of_key({inputs[i].val.y, n});
+        ys_ordered.insert({inputs[i].val.y, inputs[i].id});
+    }
+    cses::print_range(anss);
+
+    ys_ordered.clear();
+
+    for (int i = 0; i < n; i++) {
+        anss[inputs[i].id] = i - ys_ordered.order_of_key({inputs[i].val.y, -1});
+        ys_ordered.insert({inputs[i].val.y, inputs[i].id});
+    }
+    cses::print_range(anss);
 #endif
+}

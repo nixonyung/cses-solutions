@@ -1,15 +1,15 @@
-#include <cstdio>
+#include "../../lib/cses_io.hpp"
 #include <set>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    cses::enable_fast_io();
+
+    auto n = cses::read<int>();
 
     // greedy solution: put k to the smallest tower larger than k
-    std::multiset<int> tower_tops;
+    auto tower_tops = std::multiset<int>();
     while (n--) {
-        int k;
-        scanf("%d", &k);
+        auto k = cses::read<int>();
 
         auto it = tower_tops.upper_bound(k);
         if (it != tower_tops.end()) {
@@ -17,5 +17,5 @@ int main() {
         }
         tower_tops.insert(k);
     }
-    printf("%ld\n", tower_tops.size());
+    std::cout << tower_tops.size() << '\n';
 }

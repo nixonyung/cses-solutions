@@ -1,62 +1,67 @@
+#include "../../lib/cses_io.hpp"
 #include <algorithm>
-#include <cstdio>
 
-int delta(
-    int a,
-    int b,
-    int xs[],
-    int pos[]) {
+inline auto delta(
+    int               a,
+    int               b,
+    std::vector<int> &xs,
+    std::vector<int> &pos
+) {
     if (xs[a] + 1 == xs[b]) {
-        return (pos[xs[a] - 1] > a) +
-               (a > b) +
-               (b > pos[xs[b] + 1]);
+        return (pos[xs[a] - 1] > a)
+               + (a > b)
+               + (b > pos[xs[b] + 1]);
     } else if (xs[b] + 1 == xs[a]) {
-        return (pos[xs[b] - 1] > b) +
-               (b > a) +
-               (a > pos[xs[a] + 1]);
+        return (pos[xs[b] - 1] > b)
+               + (b > a)
+               + (a > pos[xs[a] + 1]);
     } else {
-        return (pos[xs[a] - 1] > a) + (a > pos[xs[a] + 1]) +
-               (pos[xs[b] - 1] > b) + (b > pos[xs[b] + 1]);
+        return (pos[xs[a] - 1] > a) + (a > pos[xs[a] + 1])
+               + (pos[xs[b] - 1] > b) + (b > pos[xs[b] + 1]);
     }
 }
 
 int main() {
-    int n, m;
-    scanf("%d %d", &n, &m);
+    cses::enable_fast_io();
 
-    int xs[(int)2e5 + 1];  // xs[1] is the first appeared x
-    int pos[(int)2e5 + 2]; // pos[x] is the position of x, first appeared x has pos[x] = 1
+    auto [n, m] = cses::read_tuple<int, int>();
+
+    auto pos = std::vector<int>(n + 2); // pos[x] is the position of x (so the first x has pos[x] = 1)
+    {
+        // dummy values to handle index-out-of-bound
+        pos[0] = 0;
+        pos[n + 1] = n + 1;
+    }
+    auto xs = std::vector<int>(n + 1); // xs[1] is the first x (pos=1)
+
     /*
     side properties:
         - xs[pos[x]] = x
         - pos[xs[i]] = i
     */
 
-    for (int i = 1; i <= n; i++) {
-        scanf("%d", &xs[i]);
+    for (auto i = 1; i <= n; i++) {
+        xs[i] = cses::read<int>();
         pos[xs[i]] = i;
     }
-    // dummy values to handle index-out-of-bound
-    pos[0] = 0;
-    pos[n + 1] = n + 1;
 
     // ans is the number of increasing subsequence in `pos`
-    int ans = 1;
-    for (int i = 1; i <= n - 1; i++) {
+    auto ans = 1;
+    for (auto i = 1; i <= n - 1; i++) {
         if (pos[i] > pos[i + 1]) {
             ans++;
         }
     }
 
     while (m--) {
-        int a, b;
-        scanf("%d %d", &a, &b);
+        auto [a, b] = cses::read_tuple<int, int>();
 
         // for each swap, update ans only by the delta contributed by index a and b
         ans -= delta(a, b, xs, pos);
         std::swap(pos[xs[a]], pos[xs[b]]);
         std::swap(xs[a], xs[b]);
         ans += delta(a, b, xs, pos);
-        printf("%d\n", ans);
+
+        std::cout << ans << '\n';
     }
 }

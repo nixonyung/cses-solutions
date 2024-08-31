@@ -24,8 +24,5 @@
   - [Algorithms for Competitive Programming](https://cp-algorithms.com/)
   - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf)
   - [std::next_permutation Implementation Explanation](https://stackoverflow.com/questions/11483060/stdnext-permutation-implementation-explanation)
-  - C++ tips:
-    - input/output:
-      - [How to get string length using scanf function](https://stackoverflow.com/questions/63674672/how-to-get-string-length-using-scanf-function)
-      - [endl vs '\n'](https://codeforces.com/blog/entry/63071)
-    - [GCC \_\_builtin\_ functions](https://stackoverflow.com/questions/13517232/gcc-builtin-functions)
+  - [Fast I/O for Competitive Programming](https://www.geeksforgeeks.org/fast-io-for-competitive-programming/)
+  - [GCC \_\_builtin\_ functions](https://stackoverflow.com/questions/13517232/gcc-builtin-functions)

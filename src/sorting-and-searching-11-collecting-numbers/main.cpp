@@ -1,22 +1,21 @@
-#include <cstdio>
+#include "../../lib/cses_io.hpp"
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    cses::enable_fast_io();
 
-    int pos[(int)2e5 + 1]; // pos[x] is the position of x, first appeared x has pos[x] = 0
-    for (int i = 0; i < n; i++) {
-        int x;
-        scanf("%d", &x);
-        pos[x] = i;
+    auto n = cses::read<int>();
+
+    auto poss = std::vector<int>(n);
+    for (auto i = 0; i < n; i++) {
+        poss[cses::read<int>()] = i;
     }
 
     // ans is the number of increasing subsequence in `pos`
-    int ans = 1;
-    for (int i = 1; i <= n - 1; i++) {
-        if (pos[i] > pos[i + 1]) {
+    auto ans = 1;
+    for (auto i = 1; i <= n - 1; i++) {
+        if (poss[i] > poss[i + 1]) {
             ans++;
         }
     }
-    printf("%d\n", ans);
+    std::cout << ans << '\n';
 }

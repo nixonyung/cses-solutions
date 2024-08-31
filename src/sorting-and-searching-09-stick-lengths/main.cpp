@@ -1,15 +1,12 @@
+#include "../../lib/cses_io.hpp"
 #include <algorithm>
-#include <cstdio>
 #include <cstdlib>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    cses::enable_fast_io();
 
-    int ps[(int)2e5];
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &ps[i]);
-    }
+    auto n = cses::read<int>();
+    auto ps = cses::read_vector<int>(n);
 
     /*
     solution: use median as the target length
@@ -20,12 +17,12 @@ int main() {
             (p[n/2] is chosen here)
     */
 
-    std::sort(ps, ps + n);
-    int median = ps[n >> 1];
+    std::ranges::sort(ps);
+    auto median = ps[n >> 1];
 
-    long ans = 0;
-    for (int i = 0; i < n; i++) {
-        ans += abs(ps[i] - median);
+    auto ans = 0L;
+    for (auto i = 0; i < n; i++) {
+        ans += std::abs(ps[i] - median);
     }
-    printf("%ld\n", ans);
+    std::cout << ans << '\n';
 }

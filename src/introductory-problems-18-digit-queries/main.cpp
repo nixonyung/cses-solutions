@@ -1,13 +1,17 @@
-#include <cstdio>
+#include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 int main() {
-    int q;
-    scanf("%d", &q);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
+    auto q = int();
+    std::cin >> q;
 
     while (q--) {
-        long k;
-        scanf("%ld", &k);
+        auto k = long();
+        std::cin >> k;
 
         /*
         given k, try to find num and digit_idx (digit_idx=0 means MSB)
@@ -37,9 +41,9 @@ int main() {
                                           digit_idx = (k-9*1-90*2 - 1)%3
             elif ...
         */
-        long num = 1;
-        long step = 9;
-        int num_digits = 1;
+        auto num = 1L;
+        auto step = 9L;
+        auto num_digits = 1;
         while (k > step * num_digits) {
             k -= step * num_digits;
             num += step;
@@ -47,15 +51,12 @@ int main() {
             step *= 10;
             num_digits++;
         }
-        auto [quot, rem] = ldiv(k - 1, num_digits);
-        num += quot;
-        int digit_idx = (int)rem;
+        auto const &[delta_num, digit_idx] = std::ldiv(k - 1, num_digits);
+        num += delta_num;
 
         // extract the wanted digit
         // remember that digit_idx=0 means MSB
-        for (int i = 0; i < (num_digits - 1 - digit_idx); i++) {
-            num /= 10;
-        }
-        printf("%ld\n", num % 10);
+        std::cout << long(num / std::powl(10, num_digits - 1 - digit_idx)) % 10
+                  << '\n';
     }
 }

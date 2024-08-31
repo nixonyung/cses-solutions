@@ -1,21 +1,20 @@
 #include <algorithm>
-#include <cstdio>
+#include <bitset>
+#include <iostream>
+#include <vector>
 
 int main() {
-    constexpr int BOARD_SIZE = 8;
+    auto const BOARD_SIZE = 8;
 
-    char board[BOARD_SIZE][BOARD_SIZE + 1];
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        scanf("%s", board[i]);
+    auto board = std::vector<char>(BOARD_SIZE * BOARD_SIZE);
+    for (auto &ch : board) {
+        std::cin >> ch;
     }
 
     // solve by brute force
     // (ref.) [Eight queens puzzle - Constructing and counting solutions when n = 8](https://omni.wikiwand.com/en/articles/Eight_queens_puzzle#Constructing_and_counting_solutions_when_n_=_8)
-    int ans = 0;
-    int queen_cols[BOARD_SIZE];
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        queen_cols[i] = i;
-    }
+    auto ans = 0;
+    auto queen_cols = std::vector<int>{0, 1, 2, 3, 4, 5, 6, 7};
     do {
         /*
         slash_occupied[0] is true iff has_queen[0][0]
@@ -23,36 +22,31 @@ int main() {
         slash_occupied[2] is true iff has_queen[0][2] and has_queen[1][1] and has_queen[2][0]
         ...
         */
-        bool slash_occupied[BOARD_SIZE * 2 - 1]; // "/"
-        for (int i = 0; i < BOARD_SIZE * 2 - 1; i++) {
-            slash_occupied[i] = false;
-        }
+        auto slash_occupied = std::bitset<BOARD_SIZE * 2 - 1>();
         /*
         backslash_occupied[0] is true iff has_queen[0][7]
         backslash_occupied[1] is true iff has_queen[0][6] and has_queen[1][7]
         backslash_occupied[2] is true iff has_queen[0][5] and has_queen[1][6] and has_queen[2][7]
         ...
         */
-        bool backslash_occupied[BOARD_SIZE * 2 - 1]; // "\"
-        for (int i = 0; i < BOARD_SIZE * 2 - 1; i++) {
-            backslash_occupied[i] = false;
-        }
+        auto backslash_occupied = std::bitset<BOARD_SIZE * 2 - 1>();
 
-        bool ok = true;
-        for (int row = 0; row < BOARD_SIZE; row++) {
+        auto ok = true;
+        for (auto row = 0; row < BOARD_SIZE; row++) {
             if (
-                (board[row][queen_cols[row]] == '*') ||
-                (slash_occupied[row + queen_cols[row]]) ||
-                (backslash_occupied[row + (BOARD_SIZE - 1 - queen_cols[row])])) {
+                (board[BOARD_SIZE * row + queen_cols[row]] == '*')
+                || (slash_occupied[row + queen_cols[row]])
+                || (backslash_occupied[row + (BOARD_SIZE - 1 - queen_cols[row])])
+            ) {
                 ok = false;
                 break;
             }
-            slash_occupied[row + queen_cols[row]] = true;
-            backslash_occupied[row + (BOARD_SIZE - 1 - queen_cols[row])] = true;
+            slash_occupied.set(row + queen_cols[row]);
+            backslash_occupied.set(row + (BOARD_SIZE - 1 - queen_cols[row]));
         }
         if (ok) {
             ans++;
         }
-    } while (std::next_permutation(queen_cols, queen_cols + BOARD_SIZE));
-    printf("%d\n", ans);
+    } while (std::ranges::next_permutation(queen_cols).found);
+    std::cout << ans << '\n';
 }

@@ -1,8 +1,11 @@
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
+    auto n = int();
+    std::cin >> n;
 
     /*
     ans = the number of "10" (= 2*5) as a factor in [1,N]
@@ -14,11 +17,11 @@ int main() {
     ans = (number of "5") + (number of "25") + (number of "625") + ...
         = n/5 + n/25 + n/625 + ...
     */
-    int ans = 0;
-    int temp = n;
+    auto ans = 0;
+    auto temp = n;
     while (temp > 0) {
         temp /= 5;
         ans += temp;
     }
-    printf("%d\n", ans);
+    std::cout << ans << '\n';
 }

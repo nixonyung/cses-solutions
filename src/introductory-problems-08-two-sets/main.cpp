@@ -1,8 +1,11 @@
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
+    auto n = int();
+    std::cin >> n;
     /*
     observe the pattern:
         when n=1, there are 1 odd numbers in [1,n] -> sum is odd and thus NOT POSSIBLE
@@ -18,7 +21,7 @@ int main() {
         notice that we can early-fail for n=1,2,5,6,...
     */
     if (!((n - 1) & 2)) {
-        printf("NO\n");
+        std::cout << "NO\n";
         return 0;
     }
 
@@ -34,18 +37,19 @@ int main() {
 
         notice that the numbers (from n down-to 1) are put in groups 1,2,2,1,1,2,2,1,...
     */
-    printf("YES\n");
-    printf("%d\n", n >> 1);
-    for (int i = 0; i < n; i++) {
+    std::cout << "YES\n"
+              << (n >> 1) << '\n';
+    for (auto i = 0; i < n; i++) {
         if ((i & 3) == 0 || (i & 3) == 3) {
-            printf("%d ", n - i);
+            std::cout << n - i << ' ';
         }
     }
-    printf("\n%d\n", (n + 1) >> 1);
-    for (int i = 0; i < n; i++) {
+    std::cout << '\n'
+              << ((n + 1) >> 1) << '\n';
+    for (auto i = 0; i < n; i++) {
         if ((i & 3) == 1 || (i & 3) == 2) {
-            printf("%d ", n - i);
+            std::cout << n - i << ' ';
         }
     }
-    printf("\n");
+    std::cout << '\n';
 }

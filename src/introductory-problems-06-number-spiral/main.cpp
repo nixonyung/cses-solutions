@@ -1,23 +1,27 @@
 #include <algorithm>
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int t;
-    scanf("%d", &t);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
+    auto t = int();
+    std::cin >> t;
 
     while (t--) {
-        int x, y;
-        scanf("%d %d", &y, &x);
+        auto x = int();
+        auto y = int();
+        std::cin >> y >> x;
 
-        long ans;
-        int layer_idx = std::max(x, y);
+        auto layer_idx = long(std::max(x, y));
         if (layer_idx & 1) {
             // the largest element (layer_idx^2) is at top-right
-            ans = (long)layer_idx * layer_idx + (1 - y) + (x - layer_idx);
+            auto ans = layer_idx * layer_idx + (1 - y) + (x - layer_idx);
+            std::cout << ans << '\n';
         } else {
             // the largest element (layer_idx^2) is at bottom-left
-            ans = (long)layer_idx * layer_idx + (y - layer_idx) + (1 - x);
+            auto ans = layer_idx * layer_idx + (y - layer_idx) + (1 - x);
+            std::cout << ans << '\n';
         }
-        printf("%ld\n", ans);
     }
 }

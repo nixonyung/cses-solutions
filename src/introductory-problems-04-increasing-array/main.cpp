@@ -1,18 +1,21 @@
 #include <algorithm>
-#include <cstdio>
+#include <iostream>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    long ans = 0;
-    int curr_max = 0;
-    for (int i = 0; i < n; i++) {
-        int x;
-        scanf("%d", &x);
+    auto n = int();
+    std::cin >> n;
+
+    auto ans = 0L;
+    auto curr_max = 0;
+    for (auto i = 0; i < n; i++) {
+        auto x = int();
+        std::cin >> x;
 
         curr_max = std::max(curr_max, x);
         ans += curr_max - x;
     }
-    printf("%ld\n", ans);
+    std::cout << ans << '\n';
 }

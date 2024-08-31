@@ -1,24 +1,26 @@
+#include "../../lib/cses_io.hpp"
 #include <algorithm>
-#include <cstdio>
-#include <map>
+#include <unordered_map>
 
 int main() {
-    int n;
-    scanf("%d", &n);
+    cses::enable_fast_io();
 
-    int ans = 0;
-    std::unordered_map<int, int> m;
-    int left = 0;
-    for (int right = 0; right < n; right++) {
-        int k;
-        scanf("%d", &k);
+    auto n = cses::read<int>();
 
-        // update left to the smallest index where there are no duplicates in [left, right]
-        if (m.contains(k)) {
-            left = std::max(left, m[k] + 1);
+    auto ans = 0;
+    {
+        auto m = std::unordered_map<int, int>(n);
+        auto left = 0;
+        for (auto right = 0; right < n; right++) {
+            auto k = cses::read<int>();
+
+            // update left to the smallest index where there are no duplicates in [left, right]
+            if (m.contains(k)) {
+                left = std::max(left, m[k] + 1);
+            }
+            ans = std::max(ans, right - left + 1);
+            m[k] = right;
         }
-        ans = std::max(ans, right - left + 1);
-        m[k] = right;
     }
-    printf("%d\n", ans);
+    std::cout << ans << '\n';
 }

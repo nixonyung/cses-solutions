@@ -1,25 +1,24 @@
-#include <cstdio>
+#include "../../lib/cses_io.hpp"
 #include <iterator>
 #include <list>
 
 int main() {
-    constexpr int K = 2; // choosing every 2 children
+    auto const K = 2; // choosing every 2 children
 
-    int n;
-    scanf("%d", &n);
+    cses::enable_fast_io();
+
+    auto n = cses::read<int>();
 
     // solve by simulation
 
     // using std::list as it supports O(1) deletion
-    std::list<int> childs(n);
-    {
-        auto it = childs.begin();
-        for (int i = 0; i < n; i++, it++) {
-            *it = i + 1;
-        }
+    auto childs = std::list<int>(n);
+    for (int i = 1; auto &child : childs) {
+        child = i;
+        i++;
     }
 
-    int child_idx = 0;
+    auto child_idx = 0;
     auto it = childs.begin();
     while (!childs.empty()) {
         child_idx += K - 1;
@@ -30,8 +29,8 @@ int main() {
             std::advance(it, K - 1);
         }
 
-        printf("%d ", *it);
-        it = childs.erase(it); // childs.erase invalidates it, and return the new iterator after the erased element
+        std::cout << *it << ' ';
+        it = childs.erase(it); // childs.erase invalidates `it`, and return the new iterator after the erased element
     }
-    printf("\n");
+    std::cout << '\n';
 }
