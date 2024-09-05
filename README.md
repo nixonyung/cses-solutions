@@ -24,5 +24,6 @@
   - [Algorithms for Competitive Programming](https://cp-algorithms.com/)
   - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf)
   - [std::next_permutation Implementation Explanation](https://stackoverflow.com/questions/11483060/stdnext-permutation-implementation-explanation)
-  - [Fast I/O for Competitive Programming](https://www.geeksforgeeks.org/fast-io-for-competitive-programming/)
+  - [How can I be sure a routine is taking advantage of (N)RVO?](https://stackoverflow.com/questions/9621720/how-can-i-be-sure-a-routine-is-taking-advantage-of-nrvo)
   - [GCC \_\_builtin\_ functions](https://stackoverflow.com/questions/13517232/gcc-builtin-functions)
+  - [C++20 Range Adaptors and Range Factories](https://brevzin.github.io/c++/2021/02/28/ranges-reference/)
