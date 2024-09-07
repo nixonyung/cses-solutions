@@ -1,8 +1,10 @@
+#include <concepts>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 
 // (ref.) [Ordered Set and GNU C++ PBDS](https://www.geeksforgeeks.org/ordered-set-gnu-c-pbds/)
 template <typename T, typename CompareFn = std::less<>>
+    requires std::predicate<CompareFn, T, T>
 using OrderedSet = __gnu_pbds::tree<
     T,
     __gnu_pbds::null_type,

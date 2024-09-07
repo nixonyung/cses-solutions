@@ -1,18 +1,18 @@
 #ifndef __FENWICK_TREE_H
 #define __FENWICK_TREE_H
 
-#include "utils.hpp"
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 template <
     typename T,
-    typename SumFn = std::plus<T>>
-    requires regular_invocable_returning<T, SumFn, T, T>
+    typename SumFn = std::plus<>>
+    requires std::regular_invocable<SumFn, T, T> &&
+             std::same_as<T, std::invoke_result_t<SumFn, T, T>>
 struct FenwickTree {
     using container_type = std::vector<T>;
     using size_type = container_type::size_type;
-    using position_type = std::make_signed_t<size_type>; // allowing position to be negative is more convenient when computing next_update_pos and next_interrogate_pos
 
     // (ref.) [Fenwick tree](https://www.wikiwand.com/en/articles/Fenwick_tree)
     // (ref.) [Fenwick Tree - Implementation](https://cp-algorithms.com/data_structures/fenwick.html#implementation)
@@ -23,40 +23,40 @@ struct FenwickTree {
         this->clear();
     }
 
+    // expose values and container const methods, e.g. size() and capacity()
     auto const &data() const { return c; }
 
     auto clear() -> void {
         std::ranges::fill(c, 0);
     }
 
-    auto update_at(position_type pos, T delta) -> void {
-        for (; pos < position_type(c.size()); pos = next_update_pos(pos)) {
-            c[pos] = sum_fn(c[pos], delta);
+    auto update_at(size_type pos, T delta) -> void {
+        for (long i = pos; std::cmp_less(i, c.size()); i = next_update_pos(i)) {
+            c[i] = sum_fn(c[i], delta);
         }
     }
 
-    auto prefix_sum(position_type pos) const -> T {
-        auto ans = T();
-        // if pos < 0, do not sum any elements
-        if (pos >= 0) {
-            // if pos >= n, skip until pos < n, effectively the same as padding data with zeroes
-            while (pos >= position_type(c.size())) {
-                pos = next_interrogate_pos(pos);
+    auto prefix_sum(size_type pos) const -> T {
+        T ans = {};
+        {
+            long i = pos;
+            // if pos >= n, skip until pos < n, effectively the same as right-padding data with zeroes
+            while (std::cmp_greater_equal(i, c.size())) {
+                i = next_interrogate_pos(i);
             }
-            while (pos >= 0) {
-                ans = sum_fn(ans, c[pos]);
-                pos = next_interrogate_pos(pos);
+            for (long i = pos; i >= 0; i = next_interrogate_pos(i)) {
+                ans = sum_fn(ans, c[i]);
             }
         }
         return ans;
     }
 
   private:
-    static auto constexpr next_update_pos(position_type pos) { return pos | (pos + 1); }
-    static auto constexpr next_interrogate_pos(position_type pos) { return (pos & (pos + 1)) - 1; }
+    static inline constexpr auto next_update_pos = [](auto i) { return i | (i + 1); };
+    static inline constexpr auto next_interrogate_pos = [](auto i) { return (i & (i + 1)) - 1; };
 
     container_type c;
-    SumFn          sum_fn;
+    SumFn sum_fn;
 };
 
 #endif
