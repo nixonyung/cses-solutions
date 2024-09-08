@@ -2,6 +2,7 @@
 #define __UTILS_H
 
 #include <algorithm>
+#include <bit>
 #include <concepts>
 #include <functional>
 #include <iostream>
