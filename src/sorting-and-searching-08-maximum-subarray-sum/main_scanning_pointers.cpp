@@ -5,12 +5,12 @@ int main() {
 
     auto n = read<uint>();
 
-    auto max_sum = std::numeric_limits<long>::min();
+    auto max_subarray_sum = std::numeric_limits<long>::min();
     {
         long curr_sum = 0;
         while (n--) {
             curr_sum += read<int>();
-            max_sum = std::max(max_sum, curr_sum);
+            max_subarray_sum = std::max(max_subarray_sum, curr_sum);
             /*
             if curr_sum > 0:
                 keep curr_sum, as it may constitute to a larger subarray sum
@@ -20,5 +20,5 @@ int main() {
             curr_sum = std::max(curr_sum, 0L);
         }
     }
-    std::cout << max_sum << '\n';
+    std::cout << max_subarray_sum << '\n';
 }
