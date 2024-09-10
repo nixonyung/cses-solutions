@@ -2,7 +2,6 @@
 #define __UTILS_H
 
 #include <algorithm>
-#include <bit>
 #include <concepts>
 #include <functional>
 #include <iostream>
@@ -17,6 +16,9 @@ using uint = unsigned int;
 using ulong = unsigned long;
 using std::string;
 using std::views::iota;
+
+#define UNARY_FN(arg) [](auto const &arg)
+#define BINARY_FN(arg1, arg2) [](auto const &arg1, auto const &arg2)
 
 static void enable_fast_io() {
     // (ref.) [Fast Input & Output](https://usaco.guide/general/fast-io?lang=cpp)
@@ -164,46 +166,6 @@ void radix_sort(Range &&range, KeyFn key_fn = {}) {
             }
         }
     }
-}
-
-/*
-A generalized variation of `std::lower_bound` that runs on arbitrary integer range [0,size).
-
-Assumption:
-    Given `size`, if there is at least 1 position `pos` in [0, size) where `is_valid(pos)` is true,
-    then [0, pos) are all invalid and [pos, size) are all valid.
-
-This function do the following:
-    - if there is no such `pos`:
-        => return `size`
-    - else:
-        => find and return `pos`
-*/
-template <typename ValidFn>
-    requires std::regular_invocable<ValidFn, size_t> &&
-             std::same_as<bool, std::invoke_result_t<ValidFn, size_t>>
-auto find_first_valid(size_t bound, ValidFn is_valid) {
-    if (
-        bound == 0 ||
-        !is_valid(bound - 1) // optimization (based on the assumption): early exit if there is no valid `pos`
-    ) {
-        return bound;
-    }
-
-    size_t pos = 0;
-    {
-        for (auto step = 1UL << (std::numeric_limits<size_t>::digits - 1 - std::countl_zero(bound - 1));
-             step > 0;
-             step >>= 1) {
-            // find last invalid pos
-            if (pos + step < bound && !is_valid(pos + step)) {
-                pos += step;
-            }
-        }
-        // return first valid pos
-        pos++;
-    }
-    return pos;
 }
 
 #endif

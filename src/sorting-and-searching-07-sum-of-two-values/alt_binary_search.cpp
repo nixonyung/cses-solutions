@@ -11,9 +11,11 @@ int main() {
     enable_fast_io();
 
     auto n = read<uint>();
-    if (n == 1) {
-        std::cout << "IMPOSSIBLE\n";
-        return 0;
+    {
+        if (n == 1) {
+            std::cout << "IMPOSSIBLE\n";
+            std::exit(0);
+        }
     }
 
     auto target = read<uint>();
@@ -23,9 +25,10 @@ int main() {
         for (uint i = 0; auto &input : inputs) {
             input = {(i++) + 1, read<uint>()};
         }
-        radix_sort(
+        std::ranges::stable_sort(
             inputs,
-            [](auto const &input) { return input.val; }
+            {},
+            UNARY_FN(input) { return input.val; }
         );
     }
 
@@ -42,18 +45,18 @@ int main() {
                 x = 100
                 a[] = [1, 11, 50, 50, ...(hundreds of 90), ...(hundreds of 100)]
         */
-        auto right = find_first_valid(
-            n,
-            [&](auto const &pos) {
-                return inputs[left].val + inputs[pos].val > target;
-            }
+        auto it = std::ranges::upper_bound(
+            inputs | std::views::drop(left + 1),
+            target - inputs[left].val,
+            {},
+            UNARY_FN(input) { return input.val; }
         );
         if (
-            left < right - 1 &&
-            inputs[left].val + inputs[right - 1].val == target
+            it-- > inputs.begin() + left + 1 &&
+            inputs[left].val + it->val == target
         ) {
-            std::cout << inputs[left].id << ' ' << inputs[right - 1].id << '\n';
-            return 0;
+            std::cout << inputs[left].id << ' ' << it->id << '\n';
+            std::exit(0);
         }
     }
     std::cout << "IMPOSSIBLE\n";

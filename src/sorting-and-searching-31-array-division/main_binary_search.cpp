@@ -5,24 +5,30 @@ int main() {
 
     auto n = read<uint>();
     auto num_subarrays = read<uint>();
-
     auto inputs = std::vector<uint>(n);
-    ulong sum = 0;
     {
         for (auto &input : inputs) {
             input = read<uint>();
-            sum += input;
-        }
-        if (num_subarrays == 1) {
-            std::cout << sum << '\n';
-            return 0;
         }
     }
 
     // (ref.) [CSES - Array Division](https://usaco.guide/problems/cses-1085-array-division/solution)
 
-    auto ans = find_first_valid(
-        sum,
+    ulong sum = 0;
+    {
+        for (auto const &input : inputs) {
+            sum += input;
+        }
+    }
+    if (num_subarrays == 1) {
+        std::cout << sum << '\n';
+        std::exit(0);
+    }
+
+    auto ans = *std::ranges::lower_bound(
+        iota(0UL, sum),
+        true,
+        {},
         [&inputs, num_subarrays](auto const &target_max_sum) {
             ulong curr_sum = 0;
             uint curr_num_subarrays = 1;
@@ -38,7 +44,7 @@ int main() {
                     }
                 }
             }
-            // define valid as `curr_num_subarrays <= num_subarrays` to fulfill `find_first_valid`'s assumption
+            // search for `curr_num_subarrays <= num_subarrays`
             //
             // the first valid pos should automatically achieve `curr_num_subarrays == num_subarrays`
             // because `curr_num_subarrays < num_subarrays` will never be the optimal solution
