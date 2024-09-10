@@ -7,6 +7,7 @@ struct Input {
 };
 } // namespace
 
+// correct implementation but outputs are different from tests
 int main() {
     enable_fast_io();
 

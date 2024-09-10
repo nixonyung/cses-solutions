@@ -13,22 +13,28 @@ int main() {
     but at the cost of spending more time on searching the correct block,
     and vice versa.
     */
-    auto const BLOCK_SIZE = 2048;
+    const uint BLOCK_SIZE = 2048;
 
     auto n = read<uint>();
     auto k = read<uint>();
 
-    auto const &[quot, rem] = std::div(n, BLOCK_SIZE);
-    auto blocks = std::vector<std::vector<int>>(quot + 1, std::vector<int>(BLOCK_SIZE));
+    auto const &[quot, rem] = std::ldiv(n, BLOCK_SIZE);
+    auto blocks = std::vector<std::vector<uint>>(quot + 1, std::vector<uint>(BLOCK_SIZE));
     {
-        for (auto i = 0; i < n; i++) {
-            auto const &[block_idx, child_idx] = std::div(i, BLOCK_SIZE);
+        uint block_idx = 0;
+        uint child_idx = 0;
+        for (auto i : iota(0U, n)) {
             blocks[block_idx][child_idx] = i + 1;
+            child_idx++;
+            if (child_idx == BLOCK_SIZE) {
+                block_idx++;
+                child_idx = 0;
+            }
         }
         blocks.back().resize(rem);
     }
 
-    auto block_idx = 0;
+    uint block_idx = 0;
     ulong pos = 0;
     for (auto i : iota(0U, n)) {
         pos += k % (n - i); // `n-i` is the curr_num_childs

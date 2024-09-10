@@ -58,6 +58,7 @@ bool find_k_sum<2>(
 }
 } // namespace
 
+// correct implementation but outputs are different from tests
 int main() {
     enable_fast_io();
 
