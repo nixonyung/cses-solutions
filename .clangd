@@ -1,4 +1,4 @@
 CompileFlags:
   Add:
     - -std=c++20
-    - -I../../lib # caveat: relative to source file
+    - -I../../../lib # caveat: relative to source file

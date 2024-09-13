@@ -21,6 +21,6 @@ test solution_file test_id=("all"): _build_docker
 test-all: _build_docker
     #!/usr/bin/env bash
     set -euxo pipefail
-    for solution_file in src/**/*.cpp; do
+    for solution_file in src/**/**/*.cpp; do
         {{DOCKER_RUN_COMMAND}} test $solution_file "all"
     done
