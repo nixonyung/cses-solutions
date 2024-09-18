@@ -20,21 +20,32 @@ using std::views::iota;
 #define UNARY_FN(arg) [](auto const &arg)
 #define BINARY_FN(arg1, arg2) [](auto const &arg1, auto const &arg2)
 
-static void enable_fast_io() {
+static inline void enable_fast_io() {
     // (ref.) [Fast Input & Output](https://usaco.guide/general/fast-io?lang=cpp)
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 }
 
 template <typename T>
-auto read() -> T {
+static inline auto read() -> T {
     T val;
     std::cin >> val;
     return val;
 }
 
+// (ref.) [Compute the lexicographically next bit permutation](https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation)
+template <typename T>
+    requires std::unsigned_integral<T>
+static inline auto next_bits_permutation(T v) -> T {
+    if (v == 0) {
+        return 0;
+    }
+    T const &t = v | (v - 1);
+    return (t + 1) | (((~t & -~t) - 1) >> (std::countr_zero(v) + 1));
+}
+
 template <uint MOD = (int)1e9 + 7>
-static auto int_pow(ulong base, uint pow) {
+static inline auto int_pow(ulong base, uint pow) {
     ulong ans = 1;
     // (ref.) [Binary Exponentiation](https://cp-algorithms.com/algebra/binary-exp.html)
     {
@@ -62,7 +73,7 @@ template <std::ranges::sized_range Range, typename KeyFn = std::identity>
              std::ranges::random_access_range<Range> &&
              std::regular_invocable<KeyFn, std::ranges::range_value_t<Range>> &&
              std::equality_comparable<std::invoke_result_t<KeyFn, std::ranges::range_value_t<Range>>>
-auto find_order_of_elements(
+static inline auto find_order_of_elements(
     Range &&range,
     KeyFn key_fn = {},
     bool reverse = false
@@ -130,7 +141,7 @@ template <
                  RADIX_BIT_WIDTH * (MAX_NUM_DIGITS - 1) <
                  std::numeric_limits<std::remove_reference_t<std::invoke_result_t<KeyFn, std::ranges::range_value_t<Range>>>>::digits
              )
-void radix_sort(Range &&range, KeyFn key_fn = {}) {
+static inline void radix_sort(Range &&range, KeyFn key_fn = {}) {
     // (ref.) [Radix sort vs Counting sort vs Bucket sort. What's the difference?](https://stackoverflow.com/questions/14368392/radix-sort-vs-counting-sort-vs-bucket-sort-whats-the-difference)
     // (ref.) [Radix Sort - Data Structures and Algorithms Tutorials](https://www.geeksforgeeks.org/radix-sort/)
 
