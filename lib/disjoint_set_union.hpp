@@ -2,49 +2,52 @@
 #define __DISJOINT_SET_UNION_H
 
 #include <concepts>
-#include <ranges>
 #include <vector>
 
-template <typename T>
-    requires std::unsigned_integral<T>
+// (ref.) [Disjoint Set Union](https://cp-algorithms.com/data_structures/disjoint_set_union.html)
+template <typename Size>
+    requires std::unsigned_integral<Size>
 struct DisjointSetUnion {
-    using container_type = std::vector<T>;
+    struct Node {
+        Size root;
+        Size size;
+    };
 
-    // (ref.) [Disjoint Set Union](https://cp-algorithms.com/data_structures/disjoint_set_union.html)
-
-    DisjointSetUnion(T n)
-        : c(n),
-          num_parents(n) {
-        for (auto const &i : std::views::iota(0U, n)) {
-            c[i] = i;
+    DisjointSetUnion(Size n)
+        : nodes(n),
+          _num_roots(n) {
+        for (Size i = 0; i < n; i++) {
+            nodes[i] = {i, 1};
         }
     }
 
-    auto get_num_parents() -> T { return num_parents; }
-
-    auto parent(T node) -> T {
-        if (node == c[node]) {
-            return node;
-        }
-        return c[node] = parent(c[node]);
+    auto num_roots() -> Size const & { return _num_roots; }
+    auto root_id(Size id) -> Size {
+        return (id == nodes[id].root) ? id
+                                      : (nodes[id].root = root_id(nodes[id].root));
     }
+    auto is_connected(Size id1, Size id2) -> bool { return root_id(id1) == root_id(id2); }
 
-    auto connect(T node1, T node2) -> void {
-        node1 = parent(node1);
-        node2 = parent(node2);
-        // common parent is the smaller parent
-        if (node1 > node2) {
-            std::swap(node1, node2);
+    auto connect(Size id1, Size id2) -> void {
+        if (is_connected(id1, id2)) {
+            return;
         }
-        if (node1 != node2) {
-            c[node2] = node1;
-            num_parents--;
+        auto root_id1 = root_id(id1);
+        auto root_id2 = root_id(id2);
+        // put root with smaller size under the root with larger size
+        if (nodes[root_id1].size >= nodes[root_id2].size) {
+            nodes[root_id2].root = root_id1;
+            nodes[root_id1].size += nodes[root_id2].size;
+        } else {
+            nodes[root_id1].root = root_id2;
+            nodes[root_id2].size += nodes[root_id1].size;
         }
+        _num_roots--;
     }
 
   private:
-    container_type c;
-    T num_parents;
+    std::vector<Node> nodes;
+    Size _num_roots;
 };
 
 #endif

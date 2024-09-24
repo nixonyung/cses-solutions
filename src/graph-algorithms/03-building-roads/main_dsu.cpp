@@ -1,5 +1,7 @@
 #include "disjoint_set_union.hpp"
 #include <iostream>
+#include <iterator>
+#include <set>
 #include <utility>
 
 int main() {
@@ -20,16 +22,18 @@ int main() {
         }
     }
     {
-        std::cout << dsu.get_num_parents() - 1 // exclude city0
-                         - 1                   // num_new_edges = num_parents - 1
-                  << '\n';
-
-        uint curr_max_city = 1;
-        for (int i = 1; std::cmp_less_equal(i, num_cities); i++) {
-            auto const &parent = dsu.parent(i);
-            if (parent > curr_max_city) {
-                std::cout << curr_max_city << ' ' << parent << '\n';
-                curr_max_city = parent;
+        auto roots = std::set<uint>();
+        {
+            for (uint i = 1; i <= num_cities; i++) {
+                roots.insert(dsu.root_id(i));
+            }
+        }
+        std::cout << roots.size() - 1 << '\n';
+        {
+            auto prev_it = roots.begin();
+            for (auto it = std::next(roots.begin()); it != roots.end(); it++) {
+                std::cout << *prev_it << ' ' << *it << '\n';
+                prev_it = it;
             }
         }
     }
