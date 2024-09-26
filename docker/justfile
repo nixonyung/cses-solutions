@@ -5,20 +5,19 @@ BUILD_CC := "g++-14"
 BUILD_CPP_VERSION := "c++20"
 BUILD_INCLUDE := "-I./lib"
 # (ref.) [My favorite C compiler flags during development](https://nullprogram.com/blog/2023/04/29/#summary)
-BUILD_FLAGS := "-O2 -Wall -Wextra -Wconversion -Wdouble-promotion -Wno-unused-parameter -Wno-unused-function -Wno-sign-conversion -fsanitize=undefined -fsanitize-trap"
+BUILD_FLAGS := "-Wall -Wextra -Wconversion -Wdouble-promotion -Wno-unused-parameter -Wno-unused-function -Wno-sign-conversion -fsanitize=undefined -fsanitize-trap"
 BUILD_OUT_FILE := "/out/main"
 BUILD_COMMAND := BUILD_CC + " " + BUILD_INCLUDE + " -std=" + BUILD_CPP_VERSION + " " + BUILD_FLAGS + " -o " + BUILD_OUT_FILE
 RUN_TIMEOUT := "2s"
 
-_build_main solution_file:
-    mkdir -p $(dirname {{BUILD_OUT_FILE}})
-    {{BUILD_COMMAND}} {{solution_file}}
-
-
-test-draft: (_build_main "./draft.cpp")
+run-draft: (_build_main_release "./draft.cpp")
     {{BUILD_OUT_FILE}}
 
-test solution_file test_id: (_build_main solution_file)
+debug solution_file test_id: (_build_main_debug solution_file)
+    cp "$(dirname {{solution_file}})/tests/{{test_id}}.in" /.in
+    gdb {{BUILD_OUT_FILE}}
+
+test solution_file test_id: (_build_main_release solution_file)
     #!/usr/bin/env bash
     # (ref.) [Safer Bash Shebang Recipes](https://github.com/casey/just?tab=readme-ov-file#safer-bash-shebang-recipes)
     set -euxo pipefail
@@ -58,3 +57,11 @@ test solution_file test_id: (_build_main solution_file)
         # (ref.) [How to run given function in Bash in parallel?](https://stackoverflow.com/questions/17307800/how-to-run-given-function-in-bash-in-parallel)
         time parallel -j$(nproc) check ::: "${test_indexs[@]}"
     fi
+
+_build_main_release solution_file:
+    mkdir -p $(dirname {{BUILD_OUT_FILE}})
+    {{BUILD_COMMAND}} -O2 {{solution_file}}
+
+_build_main_debug solution_file:
+    mkdir -p $(dirname {{BUILD_OUT_FILE}})
+    {{BUILD_COMMAND}} -O0 -g {{solution_file}}
