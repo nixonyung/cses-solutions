@@ -1,19 +1,22 @@
 /*
-DFS-esque Algorithms are not efficient:
+DFS-based algorithms won't be efficient:
 - DFS
   => not guaranteed to detect positive cycles in the search paths
 - DFS to find all positive cycles first
   => not guaranteed to detect positive sub-cycles in the detected cycles
 
-solution: modified Bellman-Ford to find the LONGEST path with POSITIVE cycle detection
+=> we need a DP-based algorithm
+
 (ref.) [Bellman-Ford Algorithm](https://cp-algorithms.com/graph/bellman_ford.html)
+The algorithm is modified to accomplish the following tasks at the same time:
+- find the LONGEST path from `start` with POSITIVE cycle detection
+- for all `rooms`, check if it can reach to the `end`
 */
 
+#include <bitset>
 #include <climits>
 #include <cstdlib>
 #include <iostream>
-#include <queue>
-#include <stack>
 #include <vector>
 
 // custom primitive data types
@@ -24,7 +27,8 @@ typedef std::make_signed_t<std::size_t> isize;
 
 namespace {
 struct Tunnel {
-    uint end_room_id;
+    uint start;
+    uint end;
     int score;
 };
 } // namespace
@@ -33,78 +37,54 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
+    const uint MAX_NUM_ROOMS = 2500;
+
     uint num_rooms;
     uint num_tunnels;
     {
         std::cin >> num_rooms >> num_tunnels;
     }
 
-    auto adjss = std::vector<std::vector<Tunnel>>(num_rooms);
+    auto tunnels = std::vector<Tunnel>(num_tunnels);
     {
-        uint start;
-        uint end;
-        int score;
         for (uint i = 0; i < num_tunnels; i++) {
-            std::cin >> start >> end >> score;
+            std::cin >> tunnels[i].start >> tunnels[i].end >> tunnels[i].score;
             // transform to 0-indexed (personal preference)
-            start--;
-            end--;
-            adjss[start].push_back({end, score});
+            tunnels[i].start--;
+            tunnels[i].end--;
         }
     }
 
     auto max_scores = std::vector<long>(num_rooms, LONG_MIN);
-    auto updated_rooms_in_last_epoch = std::vector<uint>();
+    auto can_reach_ends = std::vector<bool>(num_rooms, false);
+    auto max_score_updateds = std::bitset<MAX_NUM_ROOMS>(); // optimization: SPFA
+    auto next_max_score_updateds = std::bitset<MAX_NUM_ROOMS>();
     {
         max_scores[0] = 0;
+        max_score_updateds[0] = true;
+        can_reach_ends[num_rooms - 1] = true;
 
-        struct ToVisit {
-            uint epoch;
-            uint room_id;
-        };
-        auto to_visits = std::queue<ToVisit>();
-        to_visits.push({0, 0});
-        while (!to_visits.empty()) {
-            auto const [epoch, curr_room] = to_visits.front();
-            to_visits.pop();
-
-            for (auto const &[adj, score] : adjss[curr_room]) {
-                if (max_scores[curr_room] + score <= max_scores[adj]) continue;
-                max_scores[adj] = max_scores[curr_room] + score;
-
-                // Bellman-Ford: max_scores converges in N-1 phases if there are no positive cycles
-                // rooms that are still updated in the N-th epoch means they are in positive cycles reachable from the start
-                if (epoch + 1 == num_rooms) {
-                    updated_rooms_in_last_epoch.push_back(adj);
-                    continue;
+        for (uint epoch = 0; epoch < num_rooms; epoch++) {
+            next_max_score_updateds.reset();
+            for (auto const &[start, end, score] : tunnels) {
+                if (can_reach_ends[end]) {
+                    can_reach_ends[start] = true;
                 }
-                to_visits.push({epoch + 1, adj});
-            }
-        }
-    }
-    if (!updated_rooms_in_last_epoch.empty()) {
-        // check whether any of the rooms in positive cycles can also reach the end
-        auto to_visits = std::stack<uint>();
-        auto visited = std::vector<bool>(num_rooms, false); // optimization: no need to clear after each updated room
-        {
-            for (auto const &updated_room : updated_rooms_in_last_epoch) {
-                to_visits.push(updated_room);
-                while (!to_visits.empty()) {
-                    auto const curr_room = to_visits.top();
-                    to_visits.pop();
 
-                    visited[curr_room] = true;
-                    if (curr_room == num_rooms - 1) {
-                        std::cout << -1 << '\n';
+                if (
+                    max_score_updateds[start] &&
+                    max_scores[start] + score > max_scores[end]
+                ) {
+                    if (epoch + 1 == num_rooms && can_reach_ends[end]) {
+                        std::cout << "-1\n";
                         std::exit(0);
                     }
-
-                    for (auto const &[adj, score] : adjss[curr_room]) {
-                        if (visited[adj]) continue;
-                        to_visits.push({adj});
-                    }
+                    max_scores[end] = max_scores[start] + score;
+                    next_max_score_updateds[end] = true;
                 }
             }
+            if (next_max_score_updateds.none()) break;
+            max_score_updateds = next_max_score_updateds;
         }
     }
     std::cout << max_scores[num_rooms - 1] << '\n';
