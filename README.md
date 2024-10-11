@@ -13,6 +13,22 @@
 - download test cases, put under `src/<PROBLEM>/tests`
 - run `just test src/<PROBLEM>`
   - e.g. `just test src/introductory-problems-01-weird-algorithm`
+- helpers:
+  - debugging: run `just debug src/<PROBLEM>/<SOLUTION> <TEST_CASE>`
+    - adding breakpoints:
+      - `b <LINE_NUMBER>` / `b <FUNCTION>` to add breakpoint
+      - `info breakpoints` to list breakpoints
+      - `d <BREAKPOINT_NUM>` to delete breakpoint
+    - running the program:
+      - `r </.in` to start debugging
+      - `n` to step 1 line
+      - `c` to continue to next breakpoint
+      - `step` to step into function
+      - `q` to quit
+    - debugging:
+      - `p <VARIABLE>` to print variable
+      - `display <VARIABLE>` to print variable at every step
+  - graph visualization: run `python scripts/viz.py src/graph-algorithms/<PROBLEM>/tests/<TEST_CASE>`
 
 ## References
 
