@@ -29,7 +29,6 @@ int main() {
     }
 
     auto adjss = std::vector<std::vector<u32>>(num_cities);
-    auto adj_revss = std::vector<std::vector<u32>>(num_cities);
     {
         u32 start;
         u32 end;
@@ -40,29 +39,27 @@ int main() {
             end--;
 
             adjss[start].push_back(end);
-            adj_revss[end].push_back(start);
         }
     }
 
+    enum class Phase : unsigned char {
+        EXPLORE,
+        BACKTRACKING,
+        DONE,
+    };
+    struct State {
+        Phase phase;
+        u32 visited_at_epoch;
+        u32 lowlink; // the lowest `visited_at_epoch` this city can reach, including itself
+        bool can_extract;
+    };
+    auto states = std::vector<State>(num_cities, {Phase::EXPLORE, UINT_MAX, UINT_MAX, false});
     {
-        enum class Phase : unsigned char {
-            EXPLORE,
-            BACKTRACKING,
-            DONE,
-        };
-        struct State {
-            Phase phase;
-            u32 visited_at;
-            u32 lowlink;
-            bool in_to_extract;
-        };
-        auto states = std::vector<State>(num_cities, {Phase::EXPLORE, UINT_MAX, UINT_MAX, false});
-
         auto to_visits = std::stack<u32>();
-        auto to_extract = std::stack<u32>();
+        auto can_extracts = std::stack<u32>();
 
-        to_visits.push(0);
         u32 epoch = 0;
+        to_visits.push(0);
         while (!to_visits.empty()) {
             auto const curr = to_visits.top();
             to_visits.pop();
@@ -72,14 +69,10 @@ int main() {
                 continue;
             } break;
             case Phase::EXPLORE: {
-                states[curr] = {
-                    Phase::BACKTRACKING,
-                    epoch,
-                    epoch,
-                    true
-                };
-                epoch++;
-                to_extract.push(curr);
+                states[curr].phase = Phase::BACKTRACKING;
+                states[curr].visited_at_epoch = states[curr].lowlink = epoch++;
+                states[curr].can_extract = true;
+                can_extracts.push(curr);
 
                 to_visits.push(curr);
                 for (auto const &adj : adjss[curr]) {
@@ -90,36 +83,33 @@ int main() {
             case Phase::BACKTRACKING: {
                 states[curr].phase = Phase::DONE;
 
-                // std::cout << curr << ": ";
                 for (auto const &adj : adjss[curr]) {
-                    if (!states[adj].in_to_extract) continue;
+                    if (!states[adj].can_extract) continue;
                     states[curr].lowlink = std::min(states[curr].lowlink, states[adj].lowlink);
-                    // std::cout << adj << "(" << states[adj].visited_at << ',' << states[adj].lowlink << ") ";
                 }
-                if (states[curr].lowlink == states[curr].visited_at) {
-                    while (to_extract.top() != curr) {
-                        states[to_extract.top()].lowlink = states[curr].lowlink;
-                        states[to_extract.top()].in_to_extract = false;
-                        to_extract.pop();
+                if (states[curr].lowlink == states[curr].visited_at_epoch) {
+                    while (can_extracts.top() != curr) {
+                        states[can_extracts.top()].lowlink = states[curr].lowlink;
+                        states[can_extracts.top()].can_extract = false;
+                        can_extracts.pop();
                     }
-                    states[to_extract.top()].in_to_extract = false;
-                    to_extract.pop();
+                    states[can_extracts.top()].can_extract = false;
+                    can_extracts.pop();
                 }
-                // std::cout << "=> " << states[curr].lowlink << '\n';
             } break;
             }
         }
-        for (u32 i = 0; i < num_cities; i++) {
-            if (states[i].phase == Phase::EXPLORE) {
-                std::cout << "NO\n"
-                          << "1 " << i + 1 << '\n'; // "city_i cannot be visited from city_0"
-                std::exit(0);
-            }
-            if (states[i].lowlink != 0) {
-                std::cout << "NO\n"
-                          << i + 1 << " 1\n"; // "city_i cannot reach city_0"
-                std::exit(0);
-            }
+    }
+    for (u32 i = 0; i < num_cities; i++) {
+        if (states[i].phase == Phase::EXPLORE) {
+            std::cout << "NO\n"
+                      << "1 " << i + 1 << '\n'; // "city_i cannot be visited from city_0"
+            std::exit(0);
+        }
+        if (states[i].lowlink != 0) {
+            std::cout << "NO\n"
+                      << i + 1 << " 1\n"; // "city_i cannot reach city_0"
+            std::exit(0);
         }
     }
     std::cout << "YES\n";
