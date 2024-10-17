@@ -1,26 +1,10 @@
+#include "dfs.hpp" // this version is using my experimental custom DFS helper library
 #include "io.hpp"
-#include "k_bitset.hpp"
 #include "primitives.hpp"
 #include <cstdlib>
 #include <stack>
 #include <vector>
 
-/*
-(ref.) [Tarjan's Strongly Connected Component (SCC) Algorithm (UPDATED) | Graph Theory](https://youtu.be/wUgWX0nc4NY?si=a9VpzlmTYt1gZDPs)
-(ref.) [2-SAT](https://cp-algorithms.com/graph/2SAT.html)
-
-idea: choosing +i is not valid if +i can reach (i.e. implies) -i, and similarly choosing -i is not valid if -i implies +i
-
-We can form a solution by decomposing the implication graph into topologically sorted SCCs.
-Then:
-    1. use SCCs to ensure that a solution exists
-        A solution exists if there is no topping i where +i implies -i AND -i implies +i.
-        This is equivalent to having no topping i where +i and -i are in the same SCC.
-    2. use topological ordering to make valid choices
-        Given that in a DAG, a node with higher topological order (i.e. the node is "visited later") implies that
-        it is impossible for the node to reach other nodes with lower topological order,
-        we choose the choice (+i or -i) with a higher topological order.
-*/
 // correct implementation but outputs are different from tests
 int main() {
     enable_fast_io();
@@ -43,13 +27,6 @@ int main() {
     auto scc_ids = std::vector<U32>(num_toppings * 2, UINT_MAX);
     U32 num_sccs = 0;
     {
-        enum Phase : unsigned char {
-            EXPLORE,
-            BACKTRACKING,
-            DONE,
-        };
-        auto phases = KBitset<2>(num_toppings * 2, Phase::EXPLORE);
-
         struct State {
             U32 explored_at_epoch;
             U32 min_adj_explored_at_epoch; // the "lowlink" value, should also consider the node itself
@@ -57,33 +34,16 @@ int main() {
         };
         auto states = std::vector<State>(num_toppings * 2, {UINT_MAX, UINT_MAX, false});
         {
-            auto to_visits = std::stack<U32>();
-            auto to_extracts = std::stack<U32>();
-
+            auto dfs = DFS(num_toppings * 2, implications);
+            auto to_extracts = std::stack<USize>();
             U32 epoch = 0;
+
             for (U32 i = 0; i < num_toppings * 2; i++) {
-                if (phases[i] != Phase::EXPLORE) continue;
-                to_visits.push(i);
-                while (!to_visits.empty()) {
-                    auto const curr = to_visits.top();
-                    to_visits.pop();
-                    if (phases[curr] == Phase::DONE) continue;
+                dfs.push(i);
+                for (auto to_visit = dfs.pop(); to_visit.id != UINT_MAX; to_visit = dfs.pop()) {
+                    auto const &[curr, phase] = to_visit;
 
-                    if (phases[curr] == Phase::EXPLORE) {
-                        phases[curr] = Phase::BACKTRACKING;
-
-                        states[curr].explored_at_epoch = states[curr].min_adj_explored_at_epoch = epoch++;
-                        states[curr].can_extract = true;
-                        to_extracts.push(curr);
-
-                        to_visits.push(curr);
-                        for (auto const &adj : implications[curr]) {
-                            if (phases[adj] != Phase::EXPLORE) continue;
-                            to_visits.push(adj);
-                        }
-                    } else {
-                        phases[curr] = Phase::DONE;
-
+                    if (phase == DFS<>::Phase::BACKTRACKING) {
                         for (auto const &adj : implications[curr]) {
                             if (!states[adj].can_extract) continue;
                             states[curr].min_adj_explored_at_epoch = std::min(states[curr].min_adj_explored_at_epoch, states[adj].min_adj_explored_at_epoch);
@@ -91,7 +51,7 @@ int main() {
                         if (states[curr].min_adj_explored_at_epoch == states[curr].explored_at_epoch) {
                             num_sccs++;
                             {
-                                U32 top;
+                                USize top;
                                 do {
                                     top = to_extracts.top();
                                     to_extracts.pop();
@@ -101,7 +61,11 @@ int main() {
                                 } while (top != curr);
                             }
                         }
+                        continue;
                     }
+                    states[curr].explored_at_epoch = states[curr].min_adj_explored_at_epoch = epoch++;
+                    states[curr].can_extract = true;
+                    to_extracts.push(curr);
                 }
             }
         }
