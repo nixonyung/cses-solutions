@@ -17,10 +17,12 @@ RUN_TIMEOUT := "2s"
 
 
 _build_main_release solution_file:
+    # (ref.) [Is optimisation level -O3 dangerous in g++?](https://stackoverflow.com/questions/11546075/is-optimisation-level-o3-dangerous-in-g)
     {{BUILD_COMMAND}} -O2 {{solution_file}}
 
 _build_main_debug solution_file:
-    {{BUILD_COMMAND}} -O0 -g {{solution_file}}
+    # (ref.) [What's the difference between a compiler's `-O0` option and `-Og` option?](https://stackoverflow.com/questions/63386189/whats-the-difference-between-a-compilers-o0-option-and-og-option)
+    {{BUILD_COMMAND}} -O0 -g3 {{solution_file}}
 
 run-draft: (_build_main_release "./draft.cpp")
     {{BUILD_OUT_FILE}}
@@ -28,6 +30,9 @@ run-draft: (_build_main_release "./draft.cpp")
 debug solution_file test_id: (_build_main_debug solution_file)
     cp $(dirname {{solution_file}})/tests/{{test_id}}.in {{APP_DIR}}/.in
     gdb {{BUILD_OUT_FILE}}
+
+valgrind solution_file test_id: (_build_main_debug solution_file)
+    valgrind --leak-check=full --tool=memcheck {{BUILD_OUT_FILE}} <$(dirname {{solution_file}})/tests/{{test_id}}.in
 
 test solution_file test_id: (_build_main_release solution_file)
     #!/usr/bin/env bash

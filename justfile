@@ -35,6 +35,9 @@ test-all: _build_docker
 debug solution_file test_id: _build_docker
     {{DOCKER_RUN_COMMAND}} debug {{solution_file}} {{test_id}}
 
+valgrind solution_file test_id: _build_docker
+    {{DOCKER_RUN_COMMAND}} valgrind {{solution_file}} {{test_id}}
+
 make_submission solution_file: _build_docker
     {{DOCKER_RUN_COMMAND}} make_submission {{solution_file}}
 

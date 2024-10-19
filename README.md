@@ -31,6 +31,7 @@
       - `p <VARIABLE>` to print variable
       - `display <VARIABLE>` to print variable at every step
       - `bt` to print the call stack
+  - run `just valgrind src/<PROBLEM>/<SOLUTION> <TEST_ID>`
   - run `just visualize_graph src/<PROBLEM>/tests/<TEST_ID>.in`
   - run `just make_submission src/<PROBLEM>/<SOLUTION>`
 
