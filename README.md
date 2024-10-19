@@ -20,14 +20,17 @@
       - `info breakpoints` to list breakpoints
       - `d <BREAKPOINT_NUM>` to delete breakpoint
     - running the program:
-      - `r </.in` to start debugging
+      - `r </app/.in` to start debugging
       - `n` to step 1 line
+        - `n <COUNT>` to step n lines
       - `c` to continue to next breakpoint
+        - `c <COUNT>` to break after n breakpoints
       - `step` to step into function
       - `q` to quit
     - debugging:
       - `p <VARIABLE>` to print variable
       - `display <VARIABLE>` to print variable at every step
+      - `bt` to print the call stack
   - run `just visualize_graph src/<PROBLEM>/tests/<TEST_ID>.in`
   - run `just make_submission src/<PROBLEM>/<SOLUTION>`
 
