@@ -9,32 +9,34 @@
 // helper container to run DFS, i.e. iterate nodes without revisiting
 template <bool ENABLE_BACKTRACKING = true>
 struct DFS {
+    using ID = U32;
     enum Phase : U8 {
         EXPLORE,      // side property: an EXPLORE node is never visited
-        BACKTRACKING, // side property: when visiting a BACKTRACKING node, its adjs must be all DONE
-        DONE,         // side property: when visiting a DONE node, its adjs must be all DONE
+        BACKTRACKING, // side property: when visiting a BACKTRACKING node, its `nexts` must be all DONE
+        DONE,         // side property: when visiting a DONE node, its `nexts` must be all DONE
     };
 
     struct ToVisit {
-        U32 id;
+        ID id;
         Phase phase;
     };
 
-    DFS(U32 n, std::vector<std::vector<U32>> const &adjss)
-        : adjss(adjss),
+    DFS(USize n, std::vector<std::vector<ID>> const &nextss)
+        : nextss(nextss),
           s(),
           phases(n, Phase::EXPLORE) {
     }
 
-    auto push(U32 id) { s.push(id); }
+    auto push(ID id) { s.push(id); }
 
     ToVisit pop() {
-        U32 curr;
-        do {
+        if (s.empty()) return {UINT_MAX, Phase::DONE};
+        ID curr = s.top();
+        while (phases[curr] == Phase::DONE) {
+            s.pop();
             if (s.empty()) return {UINT_MAX, Phase::DONE};
             curr = s.top();
-            s.pop();
-        } while (phases[curr] == Phase::DONE);
+        }
 
         if (phases[curr] == Phase::BACKTRACKING) {
             phases[curr] = Phase::DONE;
@@ -43,19 +45,19 @@ struct DFS {
 
         if (ENABLE_BACKTRACKING) {
             phases[curr] = Phase::BACKTRACKING;
-            s.push(curr);
         } else {
             phases[curr] = Phase::DONE;
+            s.pop();
         }
-        for (auto const &adj : adjss[curr]) {
-            if (phases[adj] == Phase::EXPLORE) s.push(adj);
+        for (auto const &next : nextss[curr]) {
+            if (phases[next] == Phase::EXPLORE) s.push(next);
         }
         return {curr, Phase::EXPLORE};
     }
 
   private:
-    std::vector<std::vector<U32>> const &adjss;
-    std::stack<U32> s;
+    std::vector<std::vector<ID>> const &nextss;
+    std::stack<ID> s;
     KBitset<2> phases;
 };
 
