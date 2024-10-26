@@ -13,7 +13,15 @@
 - download test cases, put under `src/<PROBLEM>/tests`
 - run `just test src/<PROBLEM>`
   - e.g. `just test src/introductory-problems-01-weird-algorithm`
-- helpers:
+- run `just make_submission src/<PROBLEM>/<SOLUTION>` and submit `./out/submission.cpp`
+
+### Helper Commands
+
+- run a single test case (with outputs):
+  - run `just test src/<PROBLEM>/<SOLUTION> <TEST_ID>`
+- run a single test case with valgrind:
+  - run `just valgrind src/<PROBLEM>/<SOLUTION> <TEST_ID>`
+- start debugger (e.g. to deal with "segmentation faults"):
   - run `just debug src/<PROBLEM>/<SOLUTION> <TEST_ID>`
     - adding breakpoints:
       - `b <LINE_NUMBER>` / `b <FUNCTION>` to add breakpoint
@@ -31,17 +39,19 @@
       - `p <VARIABLE>` to print variable
       - `display <VARIABLE>` to print variable at every step
       - `bt` to print the call stack
-  - run `just valgrind src/<PROBLEM>/<SOLUTION> <TEST_ID>`
+- visualizing graph problem input (may not work for test cases with different format):
   - run `just visualize_graph src/<PROBLEM>/tests/<TEST_ID>.in`
-  - run `just make_submission src/<PROBLEM>/<SOLUTION>`
 
 ## References
 
-- [Jonathan-Uy/CSES-Solutions](https://github.com/Jonathan-Uy/CSES-Solutions)
-- [mrsac7/CSES-Solutions](https://github.com/mrsac7/CSES-Solutions)
-- [Algorithms for Competitive Programming](https://cp-algorithms.com/)
-- [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf)
-- [Fast Input & Output](https://usaco.guide/general/fast-io?lang=cpp)
-- [Practical Optimizations](https://youtu.be/NAVbI1HIzCE)
-- [How can I be sure a routine is taking advantage of (N)RVO?](https://stackoverflow.com/questions/9621720/how-can-i-be-sure-a-routine-is-taking-advantage-of-nrvo)
-- [C++20 Range Adaptors and Range Factories](https://brevzin.github.io/c++/2021/02/28/ranges-reference/)
+- others' solutions:
+  - [Jonathan-Uy/CSES-Solutions](https://github.com/Jonathan-Uy/CSES-Solutions)
+  - [mrsac7/CSES-Solutions](https://github.com/mrsac7/CSES-Solutions)
+- Competitive Programming resources:
+  - [Algorithms for Competitive Programming](https://cp-algorithms.com/)
+  - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf)
+  - [Fast Input & Output](https://usaco.guide/general/fast-io?lang=cpp)
+- optimization guidelines:
+  - [Practical Optimizations](https://youtu.be/NAVbI1HIzCE)
+  - [How can I be sure a routine is taking advantage of (N)RVO?](https://stackoverflow.com/questions/9621720/how-can-i-be-sure-a-routine-is-taking-advantage-of-nrvo)
+  - [Goto out of a block: do destructors get called?](https://stackoverflow.com/questions/3179936/goto-out-of-a-block-do-destructors-get-called)

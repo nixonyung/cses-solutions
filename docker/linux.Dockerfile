@@ -6,7 +6,7 @@ ARG GROUP_ID
 RUN --mount=type=cache,target=/root/.cache/pip \
     apt-get update \
     && apt-get install -y --no-install-recommends \
-        g++-14 gdb \
+        g++-14 gdb valgrind \
         python3.12 python3.12-venv graphviz \
         wget ca-certificates \
         just parallel time \

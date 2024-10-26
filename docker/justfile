@@ -32,7 +32,7 @@ debug solution_file test_id: (_build_main_debug solution_file)
     gdb {{BUILD_OUT_FILE}}
 
 valgrind solution_file test_id: (_build_main_debug solution_file)
-    valgrind --leak-check=full --tool=memcheck {{BUILD_OUT_FILE}} <$(dirname {{solution_file}})/tests/{{test_id}}.in
+    valgrind --leak-check=full {{BUILD_OUT_FILE}} <$(dirname {{solution_file}})/tests/{{test_id}}.in
 
 test solution_file test_id: (_build_main_release solution_file)
     #!/usr/bin/env bash
