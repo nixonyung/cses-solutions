@@ -47,6 +47,7 @@
 - others' solutions:
   - [Jonathan-Uy/CSES-Solutions](https://github.com/Jonathan-Uy/CSES-Solutions)
   - [mrsac7/CSES-Solutions](https://github.com/mrsac7/CSES-Solutions)
+  - [CSES Problemset Editorials (almost all section editorial collection)](https://codeforces.com/blog/entry/83343)
 - Competitive Programming resources:
   - [Algorithms for Competitive Programming](https://cp-algorithms.com/)
   - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf)
