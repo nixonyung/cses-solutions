@@ -1,18 +1,23 @@
-#include "utils.hpp"
+#include <iostream>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    ulong ans = 0;
+    unsigned N;
     {
-        int curr_max_x = 0;
-        for (auto _ : iota(0U, n)) {
-            auto x = read<int>();
-            curr_max_x = std::max(curr_max_x, x);
-            ans += curr_max_x - x;
+        std::cin >> N;
+    }
+
+    unsigned long min_num_moves = 0;
+    {
+        unsigned number;
+        decltype(number) max_number = 0;
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> number;
+            max_number = std::max(max_number, number);
+            min_num_moves += max_number - number;
         }
     }
-    std::cout << ans << '\n';
+    std::cout << min_num_moves << '\n';
 }

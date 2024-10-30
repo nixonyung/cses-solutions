@@ -1,9 +1,13 @@
-#include "utils.hpp"
+#include <iostream>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
+    unsigned N;
+    {
+        std::cin >> N;
+    }
 
     /*
     ans = the number of "10" (= 2*5) as a factor in [1,N]
@@ -15,12 +19,10 @@ int main() {
     ans = (number of "5") + (number of "25") + (number of "625") + ...
         = n/5 + n/25 + n/625 + ...
     */
-    ulong num_trailing_zeros = 0;
+    unsigned long num_trailing_zeros = 0;
     {
-        while (n > 0) {
-            n /= 5;
-            num_trailing_zeros += n;
-        }
+        N /= 5;
+        for (; N > 0; N /= 5) num_trailing_zeros += N;
     }
     std::cout << num_trailing_zeros << '\n';
 }

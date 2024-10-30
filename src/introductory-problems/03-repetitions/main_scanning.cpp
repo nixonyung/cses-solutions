@@ -1,22 +1,22 @@
-#include "utils.hpp"
+#include <iostream>
+#include <string>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto s = read<string>();
-
-    uint max_repeat_len = 0;
+    std::string str;
     {
-        uint curr_repeat_len = 1;
-        for (auto i : iota(1UL, s.size())) {
-            if (s[i] == s[i - 1]) {
-                curr_repeat_len++;
-            } else {
-                max_repeat_len = std::max(max_repeat_len, curr_repeat_len);
-                curr_repeat_len = 1;
-            }
+        std::cin >> str;
+    }
+
+    unsigned max_repeat_len = 0;
+    {
+        decltype(max_repeat_len) repeat_len;
+        for (unsigned i = 0; i < str.size(); i++) {
+            repeat_len = (i != 0 && str[i] == str[i - 1]) ? repeat_len + 1 : 1;
+            max_repeat_len = std::max(max_repeat_len, repeat_len);
         }
-        max_repeat_len = std::max(max_repeat_len, curr_repeat_len);
     }
     std::cout << max_repeat_len << '\n';
 }
