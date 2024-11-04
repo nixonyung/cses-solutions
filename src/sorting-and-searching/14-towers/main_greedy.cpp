@@ -1,20 +1,27 @@
-#include "utils.hpp"
+// greedy solution: put new cube to the tower with the smallest top larger than the new cube
+
+#include <iostream>
 #include <set>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
+    unsigned N;
+    {
+        std::cin >> N;
+    }
 
-    // greedy solution: put k to the smallest tower larger than k
-    auto tower_tops = std::multiset<uint>();
-    for (auto _ : iota(0U, n)) {
-        auto input = read<uint>();
-        auto it = tower_tops.upper_bound(input);
-        if (it != tower_tops.end()) {
-            tower_tops.erase(it);
+    auto tower_tops = std::multiset<unsigned>();
+    {
+        decltype(tower_tops)::value_type cube_size;
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> cube_size;
+
+            auto it = tower_tops.upper_bound(cube_size);
+            if (it != tower_tops.end()) tower_tops.extract(it);
+            tower_tops.insert(cube_size);
         }
-        tower_tops.insert(input);
     }
     std::cout << tower_tops.size() << '\n';
 }

@@ -1,49 +1,51 @@
-#include "utils.hpp"
-#include <set>
+// (ref.) [CSES - Movie Festival II](https://usaco.guide/problems/cses-1632-movie-festival-ii/solution)
 
-namespace {
-struct Input {
-    uint start;
-    uint end; // exclusive
-};
-} // namespace
+#include <algorithm>
+#include <iostream>
+#include <set>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto num_movies = read<uint>();
-    auto num_members = read<uint>();
-
-    // (ref.) [CSES - Movie Festival II](https://usaco.guide/problems/cses-1632-movie-festival-ii/solution)
-
-    auto inputs = std::vector<Input>(num_movies);
+    unsigned NUM_MOVIES;
+    unsigned NUM_MEMBERS;
     {
-        for (auto &input : inputs) {
-            input = {read<uint>(), read<uint>()};
+        std::cin >> NUM_MOVIES >> NUM_MEMBERS;
+    }
+
+    struct Movie {
+        unsigned start;
+        unsigned end; // `movie.end == prev_movie.start` is allowed
+    };
+    auto movies = std::vector<Movie>(NUM_MOVIES);
+    {
+        for (unsigned i = 0; i < NUM_MOVIES; i++) {
+            std::cin >> movies[i].start >> movies[i].end;
         }
-        radix_sort(
-            inputs,
-            [](auto const &input) {
-                return input.end;
-            }
+        std::ranges::stable_sort(
+            movies,
+            {},
+            [](Movie const &movie) { return movie.end; }
         );
     }
 
-    uint max_num_watched_movies = 0;
+    unsigned max_num_watched_movies = 0;
     {
-        auto member_available_froms = std::multiset<uint>();
-        for (auto const &input : inputs) {
-            // find largest member_available_from <= input.start
-            auto it = member_available_froms.lower_bound(input.start + 1);
-            if (it != member_available_froms.begin()) {
-                it--;
-                member_available_froms.insert(member_available_froms.end(), input.end);
-                member_available_froms.erase(it);
-                max_num_watched_movies++;
-            } else if (member_available_froms.size() < num_members) {
-                member_available_froms.insert(member_available_froms.end(), input.end);
-                max_num_watched_movies++;
+        auto member_available_froms = std::multiset<unsigned>();
+        {
+            for (unsigned i = 0; i < NUM_MEMBERS; i++) {
+                member_available_froms.insert(0);
             }
+        }
+        for (auto const &[start, end] : movies) {
+            // find largest member_available_from <= input.start
+            auto it = member_available_froms.lower_bound(start + 1);
+            if (it == member_available_froms.begin()) continue;
+            max_num_watched_movies++;
+            member_available_froms.extract(--it);
+            member_available_froms.insert(member_available_froms.end(), end);
         }
     }
     std::cout << max_num_watched_movies << '\n';

@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <ranges>
 #include <vector>
 
 int main() {
@@ -34,27 +36,30 @@ int main() {
     }
 
     /*
-    `r` is the smallest index satisfying `vals[left] + vals[r] > x` (to match with test outputs).
+    `r` is the smallest index satisfying `vals[l] + vals[r] > x` (to match with test outputs).
 
-    find `r` by maintaining pointers:
-        Time complexity = O(n) because `l` and `r` together will at most traverse all `a` once.
-        It is also more cache-friendly.
+    find `r` using binary search:
+        Time complexity = O(log(n) + log(n-1) + ... + log(1))  (because of running binary search on array with decreasing size)
+                        = O(nlogn)
 
-        Faster for cases where there are only a few elements to skip at each increment of `l`, e.g.:
+        Faster for cases where there are a lot of elements to skip at each increment of `l`, e.g.
             x = 100
-            a[] = [...(hundreds of 1), ...(hundreds of 11), 50, 50, 90, 100]
-                                                            ^   ^
+            a[] = [1, 11, 50, 50, ...(hundreds of 90), ...(hundreds of 100)]
     */
-    unsigned l = 0;
-    unsigned r = N - 1;
-    while (r < N && l < r) {
-        // decrement `right` while keeping `vals[left] + vals[right] > x`
-        while (l < r && numbers[l].val + numbers[r].val > TARGET) r--;
+    for (unsigned l = 0; l < N - 1; l++) {
+        unsigned r = (unsigned)std::distance(
+            numbers.begin(),
+            std::ranges::upper_bound(
+                numbers | std::views::drop(l + 1),
+                TARGET - numbers[l].val,
+                {},
+                [](Number const &number) { return number.val; }
+            ) - 1
+        );
         if (l < r && numbers[l].val + numbers[r].val == TARGET) {
             std::cout << numbers[l].id + 1 << ' ' << numbers[r].id + 1 << '\n';
             return 0;
         }
-        l++;
     }
     std::cout << "IMPOSSIBLE\n";
 }

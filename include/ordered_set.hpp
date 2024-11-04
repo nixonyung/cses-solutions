@@ -1,6 +1,7 @@
 #include <concepts>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
+#include <functional>
 
 // (ref.) [Ordered Set and GNU C++ PBDS](https://www.geeksforgeeks.org/ordered-set-gnu-c-pbds/)
 template <typename T, typename CompareFn = std::less<>>

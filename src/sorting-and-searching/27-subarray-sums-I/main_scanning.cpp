@@ -1,26 +1,27 @@
-#include "utils.hpp"
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-    auto target = read<uint>();
-
-    uint num_subarrays = 0;
+    unsigned N;
+    unsigned TARGET;
     {
-        auto inputs = std::vector<uint>(n);
-        ulong curr_sum = 0;
-        uint subarray_start = 0;
-        for (auto i : iota(0U, n)) {
-            inputs[i] = read<uint>();
+        std::cin >> N >> TARGET;
+    }
 
-            curr_sum += inputs[i];
-            while (curr_sum > target) {
-                curr_sum -= inputs[subarray_start++];
-            }
-            if (curr_sum == target) {
-                num_subarrays++;
-            }
+    unsigned num_subarrays = 0;
+    {
+        auto inputs = std::vector<unsigned>(N);
+        unsigned long curr_sum = 0;
+        unsigned l = 0;
+        for (unsigned r = 0; r < N; r++) {
+            std::cin >> inputs[r];
+
+            curr_sum += inputs[r];
+            while (curr_sum > TARGET) curr_sum -= inputs[l++];
+            if (curr_sum == TARGET) num_subarrays++;
         }
     }
     std::cout << num_subarrays << '\n';

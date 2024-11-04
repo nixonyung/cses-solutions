@@ -1,48 +1,50 @@
-#include "utils.hpp"
+/*
+(ref.) <https://github.com/Jonathan-Uy/CSES-Solutions/blob/main/Sorting%20and%20Searching/Tasks%20and%20Deadlines.cpp>
 
-namespace {
-struct Input {
-    uint duration;
-    uint deadline;
-};
-} // namespace
+reward = \sum{deadline_i - finish_time_i}
+       = \sum{deadline_i} - \sum{finish_time_i}
+
+Note that deadlines are constants.
+Then we can simply get the maximum reward by minimizing the finishing times.
+This is done by always choosing the task with the shortest duration.
+*/
+
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<size_t>();
-
-    auto inputs = std::vector<Input>(n);
+    unsigned N;
     {
-        for (auto &input : inputs) {
-            input = {read<uint>(), read<uint>()};
-        }
+        std::cin >> N;
     }
 
-    // (ref.) <https://github.com/Jonathan-Uy/CSES-Solutions/blob/main/Sorting%20and%20Searching/Tasks%20and%20Deadlines.cpp>
-
-    /*
-    reward = sum_i{deadline_i - finish_time_i}
-           = sum_i{deadline_i} - sum_i{finish_time_i}
-
-    Note that deadlines are constants.
-
-    Then we can simply get the maximum reward by minimizing the finishing times,
-    i.e. always choose the task with the shortest duration first.
-    */
-
-    radix_sort(
-        inputs,
-        [](auto const &input) { return input.duration; }
-    );
-
-    long ans = 0;
+    struct Task {
+        unsigned duration;
+        unsigned deadline;
+    };
+    auto tasks = std::vector<Task>(N);
     {
-        long curr_time = 0;
-        for (auto const &input : inputs) {
-            curr_time += input.duration;
-            ans += input.deadline - curr_time;
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> tasks[i].duration >> tasks[i].deadline;
+        }
+        std::ranges::stable_sort(
+            tasks,
+            {},
+            [](Task const &task) { return task.duration; }
+        );
+    }
+
+    long rewards_sum = 0;
+    {
+        unsigned long t = 0;
+        for (auto const &[duration, deadline] : tasks) {
+            t += duration;
+            rewards_sum += (long)deadline - t;
         }
     }
-    std::cout << ans << '\n';
+    std::cout << rewards_sum << '\n';
 }

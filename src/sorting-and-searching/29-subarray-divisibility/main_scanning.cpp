@@ -1,24 +1,28 @@
-#include "utils.hpp"
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    ulong num_subarrays = 0;
+    unsigned N;
     {
-        auto inputs = std::vector<int>(n);
-        long curr_mod_sum = 0;
-        auto prefix_mod_sum_counter = std::vector<uint>(n);
+        std::cin >> N;
+    }
+
+    unsigned long num_subarrays = 0;
+    {
+        auto numbers = std::vector<int>(N);
+        long numbers_sum = 0;
+        auto prefix_mod_counter = std::vector<unsigned>(N);
         {
-            prefix_mod_sum_counter[0] = 1;
+            prefix_mod_counter[0] = 1;
         }
-        for (auto i : iota(0U, n)) {
-            inputs[i] = read<int>();
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> numbers[i];
             // (ref.) [Fastest way to get a positive modulo in C/C++](https://stackoverflow.com/questions/14997165/fastest-way-to-get-a-positive-modulo-in-c-c)
-            curr_mod_sum = ((curr_mod_sum + inputs[i]) % n + n) % n;
-            num_subarrays += prefix_mod_sum_counter[curr_mod_sum]; // want curr_mod_sum - prefix_mod_sum = 0
-            prefix_mod_sum_counter[curr_mod_sum]++;
+            numbers_sum = ((numbers_sum + numbers[i]) % N + N) % N;
+            num_subarrays += prefix_mod_counter[numbers_sum]++; // want curr_mod_sum - prefix_mod_sum = 0
         }
     }
     std::cout << num_subarrays << '\n';

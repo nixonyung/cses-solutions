@@ -1,41 +1,41 @@
-#include "utils.hpp"
+// greedy solution: at each step, try to pick the smallest `movie.end`
 
-namespace {
-struct Input {
-    uint start; // inclusive
-    uint end;   // exclusive
-};
-} // namespace
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    auto inputs = std::vector<Input>(n);
+    unsigned NUM_MOVIES;
     {
-        for (auto &input : inputs) {
-            input.start = read<uint>();
-            input.end = read<uint>();
+        std::cin >> NUM_MOVIES;
+    }
+    struct Movie {
+        unsigned start;
+        unsigned end;
+    };
+    auto movies = std::vector<Movie>(NUM_MOVIES);
+    {
+        for (unsigned i = 0; i < NUM_MOVIES; i++) {
+            std::cin >> movies[i].start >> movies[i].end;
         }
+        std::ranges::stable_sort(
+            movies,
+            {},
+            [](Movie const &movie) { return movie.end; }
+        );
     }
 
-    // greedy solution: at each step, try to pick the smallest `b`
-
-    radix_sort(
-        inputs,
-        [](auto const &input) { return input.end; }
-    );
-
-    uint ans = 0;
+    unsigned num_movies = 0;
     {
-        uint last_b = 0;
-        for (auto const &input : inputs) {
-            if (input.start >= last_b) {
-                ans++;
-                last_b = input.end;
-            }
+        decltype(Movie::end) old_end = 0;
+        for (auto const &[start, end] : movies) {
+            if (start < old_end) continue; // note that start == old_end is allowed
+            num_movies++;
+            old_end = end;
         }
     }
-    std::cout << ans << '\n';
+    std::cout << num_movies << '\n';
 }

@@ -1,36 +1,30 @@
-#include "utils.hpp"
+// (ref.) [Stacks - Application - Nearest Smaller Element](https://usaco.guide/gold/stacks?lang=cpp#application---nearest-smaller-element)
+// using a stack because for any `inputs[i]`, inputs before i and >= `inputs[i]` is not a solution for i AND after i
 
-namespace {
-struct Input {
-    uint id;
-    uint val;
-};
-} // namespace
+#include <iostream>
+#include <stack>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    // (ref.) [Stacks - Application - Nearest Smaller Element](https://usaco.guide/gold/stacks?lang=cpp#application---nearest-smaller-element)
-    // using a stack because for any `inputs[i]`, inputs before i and >= `inputs[i]` is not a solution for i AND after i
-
-    auto anss = std::vector<uint>(n);
+    unsigned N;
     {
-        auto stack = std::vector<Input>();
-        stack.reserve(n);
-
-        for (auto i : iota(0U, n)) {
-            Input input = {i + 1, read<uint>()};
-            while (!stack.empty() && stack.back().val >= input.val) {
-                stack.pop_back();
-            }
-            anss[i] = stack.empty() ? 0 : stack.back().id;
-            stack.push_back(input);
-        }
+        std::cin >> N;
     }
-    for (auto const &ans : anss) {
-        std::cout << ans << ' ';
+
+    struct Number {
+        unsigned id;
+        unsigned val;
+    };
+    auto s = std::stack<Number>();
+    unsigned val;
+    for (unsigned i = 0; i < N; i++) {
+        std::cin >> val;
+
+        while (!s.empty() && s.top().val >= val) s.pop();
+        std::cout << (!s.empty() ? s.top().id + 1 : 0) << ' ';
+        s.push({i, val});
     }
     std::cout << '\n';
 }

@@ -1,67 +1,72 @@
-#include "utils.hpp"
+// (ref.) [CSES - Sum of Three Values](https://usaco.guide/problems/cses-1641-sum-of-three-values/solution)
 
-namespace {
-struct Input {
-    uint id;
-    uint val;
-};
-
-inline auto get_sum(
-    uint pos1,
-    uint pos2,
-    uint pos3,
-    std::vector<Input> const &inputs
-) {
-    return (ulong)inputs[pos1].val + inputs[pos2].val + inputs[pos3].val;
-}
-} // namespace
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-    auto target = read<uint>();
-    if (n < 3) {
+    unsigned N;
+    unsigned TARGET;
+    {
+        std::cin >> N >> TARGET;
+    }
+    if (N < 3) {
         std::cout << "IMPOSSIBLE\n";
         return 0;
     }
 
-    auto inputs = std::vector<Input>(n);
+    struct Number {
+        unsigned id;
+        unsigned val;
+    };
+    auto numbers = std::vector<Number>(N);
     {
-        for (uint i = 0; auto &input : inputs) {
-            input = {(i++) + 1, read<uint>()};
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> numbers[i].val;
+            numbers[i].id = i;
         }
-        radix_sort(
-            inputs,
-            [](auto const &input) { return input.val; }
+        std::ranges::stable_sort(
+            numbers,
+            {},
+            [](Number const &number) { return number.val; }
         );
+    }
+    {
+        auto get_sum = [&numbers](
+                           unsigned number_idx1,
+                           unsigned number_idx2,
+                           unsigned number_idx3
+                       ) {
+            return (unsigned long)numbers[number_idx1].val +
+                   numbers[number_idx2].val +
+                   numbers[number_idx3].val;
+        };
+
         if (
-            get_sum(0, 1, 2, inputs) > target ||
-            get_sum(n - 3, n - 2, n - 1, inputs) < target
+            get_sum(0, 1, 2) > TARGET ||
+            get_sum(N - 3, N - 2, N - 1) < TARGET
         ) {
             std::cout << "IMPOSSIBLE\n";
             return 0;
         }
-    }
+        for (unsigned pivot = 0; pivot < N - 2; pivot++) {
+            if (get_sum(pivot, N - 2, N - 1) < TARGET) continue;
 
-    // (ref.) [CSES - Sum of Three Values](https://usaco.guide/problems/cses-1641-sum-of-three-values/solution)
-
-    for (auto fixed : iota(0U, n - 2)) {
-        if (get_sum(fixed, n - 2, n - 1, inputs) < target) {
-            continue;
-        }
-
-        uint left = fixed + 1;
-        uint right = n - 1;
-        while (left < right) {
-            auto const &sum = get_sum(fixed, left, right, inputs);
-            if (sum == target) {
-                std::cout << inputs[fixed].id << ' ' << inputs[left].id << ' ' << inputs[right].id << '\n';
-                return 0;
-            } else if (sum < target) {
-                left++;
-            } else {
-                right--;
+            unsigned l = pivot + 1;
+            unsigned r = N - 1;
+            while (l < r) {
+                auto const sum = get_sum(pivot, l, r);
+                if (sum == TARGET) {
+                    std::cout << numbers[pivot].id + 1 << ' '
+                              << numbers[l].id + 1 << ' '
+                              << numbers[r].id + 1 << '\n';
+                    return 0;
+                }
+                if (sum < TARGET) l++;
+                else r--;
             }
         }
     }
