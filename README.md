@@ -51,8 +51,14 @@
 - Competitive Programming resources:
   - [Algorithms for Competitive Programming](https://cp-algorithms.com/)
   - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf)
-  - [Fast Input & Output](https://usaco.guide/general/fast-io?lang=cpp)
 - optimization guidelines:
   - [Practical Optimizations](https://youtu.be/NAVbI1HIzCE)
+  - [Terry Davis - The Hardest Question In Programming](https://youtu.be/4K8IEzXnMYk)
+  - [Fast Input & Output](https://usaco.guide/general/fast-io?lang=cpp)
+  - [Is short-circuiting logical operators mandated? And evaluation order?](https://stackoverflow.com/questions/628526/is-short-circuiting-logical-operators-mandated-and-evaluation-order)
+  - [Can unsigned integer arithmetic make the code more efficient?](https://www.reddit.com/r/cpp_questions/comments/11mcwqa/can_unsigned_integer_arithmetic_make_the_code/)
+    - [Wrap around explanation for signed and unsigned variables in C?](https://stackoverflow.com/questions/19842215/wrap-around-explanation-for-signed-and-unsigned-variables-in-c)
   - [How can I be sure a routine is taking advantage of (N)RVO?](https://stackoverflow.com/questions/9621720/how-can-i-be-sure-a-routine-is-taking-advantage-of-nrvo)
   - [Goto out of a block: do destructors get called?](https://stackoverflow.com/questions/3179936/goto-out-of-a-block-do-destructors-get-called)
+- [TODO] C++23 features
+  - [How to make a recursive lambda](https://stackoverflow.com/a/40873657)
