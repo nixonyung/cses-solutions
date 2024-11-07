@@ -38,8 +38,9 @@ int main() {
     for (unsigned i = 0; i < num_moves; i++) {
         auto [source, target] = ((N & 1) ? ODD_N_SEQUENCES : EVEN_N_SEQUENCES)[i % 3];
         if (
-            !pegs[target].empty() &&
-            (pegs[source].empty() || pegs[source].top() > pegs[target].top())
+            !pegs[target].empty()
+            && (pegs[source].empty()
+                || pegs[source].top() > pegs[target].top())
         ) std::swap(source, target);
 
         std::cout << source + 1 << ' ' << target + 1 << '\n';

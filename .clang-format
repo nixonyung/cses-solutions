@@ -8,4 +8,4 @@ AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortLoopsOnASingleLine: true
 BinPackArguments: false
 BinPackParameters: false
-# InsertBraces: true
+BreakBeforeBinaryOperators: NonAssignment

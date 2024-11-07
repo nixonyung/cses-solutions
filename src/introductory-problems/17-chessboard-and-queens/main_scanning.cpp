@@ -33,9 +33,9 @@ int main() {
             {
                 for (unsigned row = 0; row < BOARD_SIZE; row++) {
                     if (
-                        (board[row * BOARD_SIZE + queen_cols[row]] == '*') ||
-                        (slash_occupieds[row + queen_cols[row]]) ||
-                        (backslash_occupieds[row + (BOARD_SIZE - 1 - queen_cols[row])])
+                        (board[row * BOARD_SIZE + queen_cols[row]] == '*')
+                        || (slash_occupieds[row + queen_cols[row]])
+                        || (backslash_occupieds[row + (BOARD_SIZE - 1 - queen_cols[row])])
                     ) {
                         is_valid = false;
                         break;

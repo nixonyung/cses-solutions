@@ -13,11 +13,11 @@ int main() {
 
     for (unsigned board_size = 1; board_size <= N; board_size++) {
         std::cout << (
-                         // total number of configurations: choose any 2 cells from the board, order doesn't matter
-                         (unsigned long)(board_size * board_size) * ((board_size * board_size) - 1) / 2 -
-                         // total number of invalid configurations: two for each 2x3 and 3x2 cells
-                         (unsigned long)((board_size - 1) * (board_size - 2) * 2) * 2
-                     )
+            // total number of configurations: choose any 2 cells from the board, order doesn't matter
+            (unsigned long)(board_size * board_size) * ((board_size * board_size) - 1) / 2 -
+            // total number of invalid configurations: two for each 2x3 and 3x2 cells
+            (unsigned long)((board_size - 1) * (board_size - 2) * 2) * 2
+        )
                   << '\n';
     }
 }

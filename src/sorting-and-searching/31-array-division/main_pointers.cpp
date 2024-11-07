@@ -29,24 +29,24 @@ int main() {
         return 0;
     }
     std::cout << *std::ranges::lower_bound(
-                     std::views::iota(0UL, numbers_sum),
-                     true,
-                     {},
-                     [&numbers, NUM_SUBARRAYS](auto const &target_max_sum) {
-                         unsigned long sum = 0;
-                         unsigned num_subarrays = 1;
-                         for (auto const &number : numbers) {
-                             if (number > target_max_sum) return false;
-                             if (sum + number > target_max_sum) {
-                                 num_subarrays++;
-                                 if (num_subarrays > NUM_SUBARRAYS) return false;
-                                 sum = number;
-                                 continue;
-                             }
-                             sum += number;
-                         }
-                         return true;
-                     }
-                 )
+        std::views::iota(0UL, numbers_sum),
+        true,
+        {},
+        [&numbers, NUM_SUBARRAYS](auto const &target_max_sum) {
+            unsigned long sum = 0;
+            unsigned num_subarrays = 1;
+            for (auto const &number : numbers) {
+                if (number > target_max_sum) return false;
+                if (sum + number > target_max_sum) {
+                    num_subarrays++;
+                    if (num_subarrays > NUM_SUBARRAYS) return false;
+                    sum = number;
+                    continue;
+                }
+                sum += number;
+            }
+            return true;
+        }
+    )
               << '\n';
 }

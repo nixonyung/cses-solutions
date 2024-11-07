@@ -42,27 +42,21 @@ int main() {
                            unsigned number_idx3,
                            unsigned number_idx4
                        ) {
-            return (unsigned long)numbers[number_idx1].val +
-                   numbers[number_idx2].val +
-                   numbers[number_idx3].val +
-                   numbers[number_idx4].val;
+            return (unsigned long)numbers[number_idx1].val + numbers[number_idx2].val + numbers[number_idx3].val + numbers[number_idx4].val;
         };
         if (
-            get_sum(0, 1, 2, 3) > TARGET ||
-            get_sum(N - 4, N - 3, N - 2, N - 1) < TARGET
+            get_sum(0, 1, 2, 3) > TARGET || get_sum(N - 4, N - 3, N - 2, N - 1) < TARGET
         ) {
             std::cout << "IMPOSSIBLE\n";
             return 0;
         }
         for (unsigned pivot1 = 0; pivot1 < N - 3; pivot1++) {
             if (
-                get_sum(pivot1, pivot1 + 1, pivot1 + 2, pivot1 + 3) > TARGET ||
-                get_sum(pivot1, N - 3, N - 2, N - 1) < TARGET
+                get_sum(pivot1, pivot1 + 1, pivot1 + 2, pivot1 + 3) > TARGET || get_sum(pivot1, N - 3, N - 2, N - 1) < TARGET
             ) continue;
             for (unsigned pivot2 = pivot1 + 1; pivot2 < N - 2; pivot2++) {
                 if (
-                    get_sum(pivot1, pivot2, pivot2 + 1, pivot2 + 2) > TARGET ||
-                    get_sum(pivot1, pivot2, N - 2, N - 1) < TARGET
+                    get_sum(pivot1, pivot2, pivot2 + 1, pivot2 + 2) > TARGET || get_sum(pivot1, pivot2, N - 2, N - 1) < TARGET
                 ) continue;
 
                 unsigned l = pivot2 + 1;

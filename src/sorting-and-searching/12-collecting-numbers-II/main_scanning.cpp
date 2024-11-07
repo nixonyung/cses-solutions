@@ -39,19 +39,21 @@ int main() {
         auto delta_num_rounds = [&numbers, &poss](unsigned pos1, unsigned pos2) -> unsigned {
             // when swapping two consecutive increasing numbers, e.g. 1 2
             if (numbers[pos1] + 1 == numbers[pos2]) {
-                return (poss[numbers[pos1] - 1] > pos1) +
-                       (pos1 > pos2) +
-                       (pos2 > poss[numbers[pos2] + 1]);
+                return (poss[numbers[pos1] - 1] > pos1)
+                       + (pos1 > pos2)
+                       + (pos2 > poss[numbers[pos2] + 1]);
             }
             // when swapping two consecutive decreasing numbers, e.g. 2 1
             if (numbers[pos2] + 1 == numbers[pos1]) {
-                return (poss[numbers[pos2] - 1] > pos2) +
-                       (pos2 > pos1) +
-                       (pos1 > poss[numbers[pos1] + 1]);
+                return (poss[numbers[pos2] - 1] > pos2)
+                       + (pos2 > pos1)
+                       + (pos1 > poss[numbers[pos1] + 1]);
             }
             // swaaping anything else, e.g. 1 3 or 3 1
-            return (poss[numbers[pos1] - 1] > pos1) + (pos1 > poss[numbers[pos1] + 1]) +
-                   (poss[numbers[pos2] - 1] > pos2) + (pos2 > poss[numbers[pos2] + 1]);
+            return (poss[numbers[pos1] - 1] > pos1)
+                   + (pos1 > poss[numbers[pos1] + 1])
+                   + (poss[numbers[pos2] - 1] > pos2)
+                   + (pos2 > poss[numbers[pos2] + 1]);
         };
 
         unsigned pos1;

@@ -23,20 +23,20 @@ int main() {
         }
     }
     std::cout << *std::ranges::lower_bound(
-                     std::views::iota(
-                         1UL,
-                         (unsigned long)min_machine_duration * TARGET + 1
-                     ),
-                     true,
-                     {},
-                     [TARGET, &machine_durations](auto const &t) {
-                         unsigned long num_products = 0;
-                         for (auto const &machine_duration : machine_durations) {
-                             num_products += t / machine_duration;
-                             if (num_products >= TARGET) return true;
-                         }
-                         return false;
-                     }
-                 )
+        std::views::iota(
+            1UL,
+            (unsigned long)min_machine_duration * TARGET + 1
+        ),
+        true,
+        {},
+        [TARGET, &machine_durations](auto const &t) {
+            unsigned long num_products = 0;
+            for (auto const &machine_duration : machine_durations) {
+                num_products += t / machine_duration;
+                if (num_products >= TARGET) return true;
+            }
+            return false;
+        }
+    )
               << '\n';
 }

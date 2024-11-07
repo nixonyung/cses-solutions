@@ -40,14 +40,14 @@ int main() {
                            unsigned number_idx2,
                            unsigned number_idx3
                        ) {
-            return (unsigned long)numbers[number_idx1].val +
-                   numbers[number_idx2].val +
-                   numbers[number_idx3].val;
+            return (unsigned long)numbers[number_idx1].val
+                   + numbers[number_idx2].val
+                   + numbers[number_idx3].val;
         };
 
         if (
-            get_sum(0, 1, 2) > TARGET ||
-            get_sum(N - 3, N - 2, N - 1) < TARGET
+            get_sum(0, 1, 2) > TARGET
+            || get_sum(N - 3, N - 2, N - 1) < TARGET
         ) {
             std::cout << "IMPOSSIBLE\n";
             return 0;
