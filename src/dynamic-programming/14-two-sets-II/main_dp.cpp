@@ -1,34 +1,34 @@
-#include "utils.hpp"
+#include <iostream>
+#include <vector>
+
+namespace {
+const unsigned long MOD = 1e9 + 7;
+} // namespace
 
 int main() {
-    const ulong MOD = 1e9 + 7;
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    enable_fast_io();
-
-    auto n = read<uint>();
-    // refer to introductory-problems/08-two-sets solution
-    if (!((n - 1) & 2)) {
-        std::cout << 0 << '\n';
-        std::exit(0);
-    }
-
-    auto sum_numbers = n * (n + 1) / 2;
-    auto num_wayss = std::vector<ulong>(sum_numbers + 1, 0);
+    unsigned N;
     {
-        // terminal state
+        std::cin >> N;
+    }
+    // see introductory-problems/08-two-sets
+    if (!((N - 1) & 2)) {
+        std::cout << 0 << '\n';
+        return 0;
+    }
+    unsigned const numbers_sum = N * (N + 1) / 2;
+
+    auto num_wayss = std::vector<unsigned long>(numbers_sum + 1, 0);
+    {
         num_wayss[0] = 1;
 
-        // recurrence
-        for (auto number : iota(1U, n + 1)) { // loop actions then loop states -> find combinations
-            for (
-                auto i : iota(number, sum_numbers + 1) |
-                             std::views::reverse // reverse -> "0-1 knapsack"
-            ) {
-                num_wayss[i] = (num_wayss[i] + num_wayss[i - number]) %
-                               (MOD * 2); // note: x / 2 % MOD = x % (2*MOD) / 2
+        for (unsigned number = 1; number <= N; number++) {
+            for (unsigned i = numbers_sum; i >= number; i--) {
+                num_wayss[i] = (num_wayss[i] + num_wayss[i - number]) % (MOD * 2); // (x/2) % MOD = (x % (MOD*2)) / 2
             }
         }
     }
-    std::cout << num_wayss[sum_numbers / 2] / 2 // eliminate double counting
-              << '\n';
+    std::cout << num_wayss[numbers_sum / 2] / 2 << '\n'; // eliminate double counting
 }

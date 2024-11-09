@@ -1,22 +1,26 @@
-#include "utils.hpp"
+#include <iostream>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    uint min_num_steps = 0;
+    unsigned N;
     {
-        while (n > 0) {
-            uint max_digit = 0;
+        std::cin >> N;
+    }
+
+    unsigned min_num_steps = 0;
+    {
+        while (N > 0) {
+            unsigned max_digit = 0;
             {
-                uint i = n;
-                while (i > 0) {
-                    max_digit = std::max(max_digit, i % 10);
-                    i /= 10;
+                unsigned _N = N;
+                while (_N > 0) {
+                    max_digit = std::max(max_digit, _N % 10);
+                    _N /= 10;
                 }
             }
-            n -= max_digit;
+            N -= max_digit;
             min_num_steps++;
         }
     }

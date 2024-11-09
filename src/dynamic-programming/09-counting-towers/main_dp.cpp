@@ -1,69 +1,75 @@
-#include "utils.hpp"
+/*
+(ref.) [CSES DP section Editorial](https://codeforces.com/blog/entry/105092)
+
+There are two types of towers:
+
+  - type A (top is a 2-col block):
+    _____
+    |   |
+    |...|
+
+  - type B (top is two 1-col blocks):
+    _____
+    | | |
+    |...|
+
+Denote num_towerss[i*2 + 0] as the number of type A towers at height i (i = 0 represents the lowest floor),
+       num_towerss[i*2 + 1] as the number of type B towers at height i.
+
+Then the recurrence relationship is:
+
+  - num_towerss[i*2 + 0] = 2 * num_towerss[(i-1)*2 + 0] + num_towerss[(i-1)*2 + 1]
+    - we can get type A height `i` towers from type A height `i-1` towers by either:
+      - extend the last 2-col block
+      - start a new 2-col block
+    - we can get type A height `i` towers from type B height `i-1` towers by either:
+      - start a new 2-col block
+
+  - num_towerss[i*2 + 1] = num_towerss[(i-1)*2 + 0] + 4 * num_towerss[(i-1)*2 + 1]
+    - we can get type B height `i` towers from type A height `i-1` towers by either:
+      - start two new 1-col blocks
+    - we can get type B height `i` towers from type B height `i-1` towers by either:
+      - extend the last 1-col blocks
+      - extend the left 1-col block and start a new 1-col block at right
+      - extend the right 1-col block and start a new 1-col block at left
+      - start two new 1-col blocks
+*/
+
+#include <iostream>
+#include <vector>
+
+namespace {
+const unsigned long MOD = 1e9 + 7;
+} // namespace
 
 int main() {
-    const ulong MOD = 1e9 + 7;
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    enable_fast_io();
+    unsigned NUM_TESTS;
+    {
+        std::cin >> NUM_TESTS;
+    }
 
-    auto num_tests = read<uint>();
-    auto dp = std::vector<ulong>(1000000 * 2);
-    while (num_tests--) {
-        auto n = read<uint>();
-        {
-            /*
-            (ref.) [CSES DP section Editorial](https://codeforces.com/blog/entry/105092)
+    auto num_towerss = std::vector<unsigned long>(4);
+    {
+        unsigned N = 1;
+        num_towerss[2] = 1; // number of type A towers at N-1
+        num_towerss[3] = 1; // number of type B towers at N=1
 
-            Classifying towers into these two types:
+        decltype(N) new_N;
+        while (NUM_TESTS--) {
+            std::cin >> new_N;
 
-            - type A (top is a 2-col block):
-              _____
-              |   |
-              |...|
-
-            - type B (top is two 1-col blocks):
-              _____
-              | | |
-              |...|
-
-            Denote dp[i][0] as the number of type A towers at height i (i = 0 means the lowest floor),
-                   dp[i][1] as the number of type B towers at height i.
-
-            The recurrence relationship is:
-
-                - dp[i][0] = 2 * dp[i-1][0] + dp[i-1][1]
-
-                  - from type A towers, we can:
-                    - extend the last 2-col block
-                    - start a new 2-col block
-                  - from type B towers, we can:
-                    - start a new 2-col block
-
-                - dp[i][1] = dp[i-1][0] + 4 * dp[i-1][1]
-
-                  - from type A towers, we can:
-                    - start two new 1-col blocks
-                  - from type B towers, we can:
-                    - extend the last 1-col blocks
-                    - extend the left 1-col block and start a new 1-col block at right
-                    - extend the right 1-col block and start a new 1-col block at left
-                    - start two new 1-col blocks
-            */
-
-            // initial state
-            dp[0] = 1;
-            dp[1] = 1;
-
-            // recurrence
-            for (auto i : iota(0U, n - 1)) {
-                dp[i * 2 + 2] = (dp[i * 2] * 2 +
-                                 dp[i * 2 + 1]
-                                ) %
-                                MOD;
-                dp[i * 2 + 3] = (dp[i * 2] +
-                                 dp[i * 2 + 1] * 4) %
-                                MOD;
+            if (new_N > N) {
+                num_towerss.resize(new_N * 2 + 2);
+                for (unsigned i = N + 1; i <= new_N; i++) {
+                    num_towerss[i * 2] = (num_towerss[i * 2 - 2] * 2 + num_towerss[i * 2 - 1]) % MOD;
+                    num_towerss[i * 2 + 1] = (num_towerss[i * 2 - 2] + num_towerss[i * 2 - 1] * 4) % MOD;
+                }
             }
+            N = new_N;
+            std::cout << (num_towerss[N * 2] + num_towerss[N * 2 + 1]) % MOD << '\n';
         }
-        std::cout << (dp[n * 2 - 2] + dp[n * 2 - 1]) % MOD << '\n';
     }
 }

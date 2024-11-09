@@ -1,34 +1,37 @@
-#include "utils.hpp"
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    auto nums = std::vector<int>(n);
-    auto exclusive_prefix_sums = std::vector<long>(n + 1);
+    unsigned N;
     {
-        long prev_prefix_sum = 0;
-        for (uint i = 0; auto &num : nums) {
-            num = read<int>();
-            exclusive_prefix_sums[i++] = prev_prefix_sum;
-            prev_prefix_sum += num;
+        std::cin >> N;
+    }
+    auto scores = std::vector<int>(N);
+    auto score_prefix_sums = std::vector<long>(N + 1);
+    {
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> scores[i];
+            score_prefix_sums[i] = ((i != 0) ? score_prefix_sums[i - 1] : 0) + scores[i];
         }
-        exclusive_prefix_sums[n] = prev_prefix_sum;
     }
 
-    auto max_scores = std::vector<long>(n); // only saving max_scores for prev interval_size
+    auto max_scores = std::vector<long>(N); // optimization: only storing max_scores for one iteration of interval_size
     {
-        // initial state
-        std::ranges::copy(nums, max_scores.begin());
-
-        // recurrence
-        for (auto interval_size : iota(2U, n + 1)) {
-            for (auto interval_start : iota(0U, n + 1 - interval_size)) {
-                auto interval_sum = exclusive_prefix_sums[interval_start + interval_size] - exclusive_prefix_sums[interval_start];
-                max_scores[interval_start] = std::max(
-                    interval_sum - max_scores[interval_start + 1], // take the first number
-                    interval_sum - max_scores[interval_start]      // take the last number
+        for (unsigned len = 1; len <= N; len++) {
+            for (unsigned l = 0; l <= N - len; l++) {
+                if (len == 1) {
+                    max_scores[l] = scores[l];
+                    continue;
+                }
+                unsigned const r = l + len - 1;
+                auto const interval_sum = score_prefix_sums[r] - ((l != 0) ? score_prefix_sums[l - 1] : 0);
+                max_scores[l] = std::max(
+                    interval_sum - max_scores[l + 1], // take numbers[l], then opponent will get prev_max_scores[l+1]
+                    interval_sum - max_scores[l]      // take numbers[r], then opponent will get prev_max_scores[l]
                 );
             }
         }

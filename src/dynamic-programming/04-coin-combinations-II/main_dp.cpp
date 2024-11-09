@@ -1,31 +1,38 @@
-#include "utils.hpp"
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+namespace {
+const unsigned long MOD = 1e9 + 7;
+} // namespace
 
 int main() {
-    const ulong MOD = 1e9 + 7;
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    enable_fast_io();
-
-    auto n = read<uint>();
-    auto target = read<uint>();
-    auto coins = std::vector<uint>(n);
+    unsigned N;
+    unsigned TARGET;
     {
-        for (auto &coin : coins) {
-            coin = read<uint>();
+        std::cin >> N >> TARGET;
+    }
+    auto coins = std::vector<unsigned>(N);
+    {
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> coins[i];
         }
+        std::ranges::stable_sort(coins); // worse time complexity but improves caching and branch prediction
     }
 
-    auto num_combinations = std::vector<ulong>(target + 1, 0);
+    auto num_combinationss = std::vector<unsigned long>(TARGET + 1, 0);
     {
-        // boundary condition
-        num_combinations[0] = 1;
+        num_combinationss[0] = 1;
 
         for (auto const &coin : coins) {
-            for (auto curr_target : iota(0U, target)) {
-                if (curr_target + coin <= target) {
-                    num_combinations[curr_target + coin] = (num_combinations[curr_target] + num_combinations[curr_target + coin]) % MOD;
-                }
+            for (unsigned target = 1; target <= TARGET; target++) {
+                if (coin > target) continue;
+                num_combinationss[target] = (num_combinationss[target] + num_combinationss[target - coin]) % MOD;
             }
         }
     }
-    std::cout << num_combinations[target] << '\n';
+    std::cout << num_combinationss[TARGET] << '\n';
 }

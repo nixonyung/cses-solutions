@@ -1,33 +1,41 @@
-#include "utils.hpp"
+#include <iostream>
+#include <vector>
+
+namespace {
+const unsigned long MOD = 1e9 + 7;
+} // namespace
 
 int main() {
-    const ulong MOD = 1e9 + 7;
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    enable_fast_io();
-
-    auto n = read<uint>();
-    auto board = std::vector<char>(n * n);
+    unsigned BOARD_SIZE;
     {
-        for (auto &cell : board) {
-            cell = read<char>();
+        std::cin >> BOARD_SIZE;
+    }
+    auto board = std::vector<char>(BOARD_SIZE * BOARD_SIZE);
+    {
+        for (unsigned i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+            std::cin >> board[i];
         }
     }
+    if (board[BOARD_SIZE * BOARD_SIZE - 1] == '*') {
+        std::cout << 0 << '\n';
+        return 0;
+    }
 
-    auto num_pathss = std::vector<ulong>(n, 0); // only store the prev row
+    auto num_pathss = std::vector<unsigned long>(BOARD_SIZE, 0); // only store the prev row
     {
-        // boundary condition
-        num_pathss[n - 1] = 1; // num_pathss[n-1][n-1] = 1
-
-        for (auto row : iota(0U, n) | std::views::reverse) {
-            if (board[row * n + n - 1] == '*') {
-                num_pathss[n - 1] = 0;
-            }
-            for (auto col : iota(0U, n - 1) | std::views::reverse) {
-                if (board[row * n + col] == '*') {
-                    num_pathss[col] = 0;
-                } else {
-                    num_pathss[col] = (num_pathss[col] + num_pathss[col + 1]) % MOD;
-                }
+        for (unsigned row = BOARD_SIZE - 1; row < BOARD_SIZE; row--) {
+            for (unsigned col = BOARD_SIZE - 1; col < BOARD_SIZE; col--) {
+                num_pathss[col] = (row == BOARD_SIZE - 1 && col == BOARD_SIZE - 1)
+                                      // initial condition
+                                      ? 1
+                                      : (board[row * BOARD_SIZE + col] == '*')
+                                            ? 0
+                                        : (col == BOARD_SIZE - 1)
+                                            ? num_pathss[col]
+                                            : (num_pathss[col] + num_pathss[col + 1]) % MOD;
             }
         }
     }

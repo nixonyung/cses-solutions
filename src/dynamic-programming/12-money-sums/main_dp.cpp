@@ -1,45 +1,39 @@
-#include "utils.hpp"
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    auto coins = std::vector<uint>(n);
-    uint sum_coins = 0;
+    unsigned N;
     {
-        for (auto &coin : coins) {
-            coin = read<uint>();
-            sum_coins += coin;
+        std::cin >> N;
+    }
+    auto coins = std::vector<unsigned>(N);
+    unsigned coins_sum = 0;
+    {
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> coins[i];
+            coins_sum += coins[i];
         }
     }
 
-    auto is_possible = std::vector<uint>(sum_coins + 1, false);
-    uint num_is_possible = 0;
+    auto is_possibles = std::vector<bool>(coins_sum + 1, false);
+    unsigned num_possibles = 0;
     {
-        // terminal state
-        is_possible[0] = true;
+        is_possibles[0] = true;
 
-        // recurrence
         for (auto const &coin : coins) {
-            for (
-                auto curr_sum : iota(coin, sum_coins + 1) |
-                                    std::views::reverse // update in reverse order so that is_possible[curr_sum - coin] will not include the current coin
-            ) {
-                if (is_possible[curr_sum - coin]) {
-                    num_is_possible += !is_possible[curr_sum];
-                    is_possible[curr_sum] = true;
-                }
+            for (unsigned sum = coins_sum; sum >= coin; sum--) {
+                if (!is_possibles[sum - coin] || is_possibles[sum]) continue;
+                num_possibles++;
+                is_possibles[sum] = true;
             }
         }
     }
-    {
-        std::cout << num_is_possible << '\n';
-        for (auto i : iota(1U, sum_coins + 1)) {
-            if (is_possible[i]) {
-                std::cout << i << ' ';
-            }
-        }
-        std::cout << '\n';
+    std::cout << num_possibles << '\n';
+    for (unsigned i = 1; i <= coins_sum; i++) {
+        if (is_possibles[i]) std::cout << i << ' ';
     }
+    std::cout << '\n';
 }

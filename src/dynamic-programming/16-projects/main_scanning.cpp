@@ -1,50 +1,55 @@
-#include "utils.hpp"
-
-namespace {
-struct Input {
-    uint start;
-    uint end; // inclusive
-    uint reward;
-};
-} // namespace
+#include <algorithm>
+#include <iostream>
+#include <ranges>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-    auto inputs = std::vector<Input>(n);
+    unsigned N;
     {
-        for (auto &input : inputs) {
-            input = {read<uint>(), read<uint>(), read<uint>()};
+        std::cin >> N;
+    }
+    struct Project {
+        unsigned start;
+        unsigned end; // cannot attend another project on the end day
+        unsigned reward;
+    };
+    auto projects = std::vector<Project>(N);
+    {
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> projects[i].start >> projects[i].end >> projects[i].reward;
         }
-        // sort projects so that we can determine if an unconsidered project can be added to a set of projects simply by checking if input.start < "projects' largest `end`"
+        // sort projects so that prev `max_reward`s must be converged
         std::ranges::stable_sort(
-            inputs,
+            projects,
             {},
-            UNARY_FN(input) { return input.end; }
+            [](Project const &project) { return project.end; }
         );
     }
 
-    auto max_rewards = std::vector<ulong>(n); // max_reward for inputs[:i+1]
+    auto max_rewards = std::vector<unsigned long>(N); // max_reward[i] is the max_reward for projects[:i+1]
     {
-        ulong prev_max_reward = 0;
-        for (auto i : iota(0U, n)) {
-            // want the largest input with input.end < inputs[i].start
-            // by first finding the smallest input with input.end >= inputs[i].start
-            auto it = std::ranges::lower_bound(
-                inputs | std::views::take(i),
-                inputs[i].start,
-                {},
-                UNARY_FN(input) { return input.end; }
+        for (unsigned i = 0; i < N; i++) {
+            // find the largest project.end < projects[i].start
+            unsigned const best_attendable_project_idx = (unsigned)std::distance(
+                                                             projects.begin(),
+                                                             std::ranges::lower_bound(
+                                                                 projects | std::views::take(i),
+                                                                 projects[i].start,
+                                                                 {},
+                                                                 [](Project const &project) { return project.end; }
+                                                             )
+                                                         )
+                                                         - 1;
+            max_rewards[i] = std::max(
+                // do not attend projects[i], then use the best result from previous projects
+                (i != 0) ? max_rewards[i - 1] : 0,
+                // attend projects[i], then use the best result from previous projects that ends before projects[i] starts
+                projects[i].reward + ((best_attendable_project_idx < i) ? max_rewards[best_attendable_project_idx] : 0)
             );
-            auto input_idx = std::distance(inputs.begin(), it) - 1;
-            if (0 <= input_idx && input_idx < i) {
-                max_rewards[i] = std::max(prev_max_reward, max_rewards[input_idx] + inputs[i].reward);
-            } else {
-                max_rewards[i] = std::max(prev_max_reward, (ulong)inputs[i].reward);
-            }
-            prev_max_reward = max_rewards[i];
         }
     }
-    std::cout << max_rewards[n - 1] << '\n';
+    std::cout << max_rewards[N - 1] << '\n';
 }

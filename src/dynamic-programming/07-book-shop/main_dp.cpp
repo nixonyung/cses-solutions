@@ -1,44 +1,41 @@
-#include "utils.hpp"
+// (ref.) [0-1 knapsack problem](https://www.wikiwand.com/en/articles/Knapsack_problem)
 
-namespace {
-struct Input {
-    uint price;
-    uint num_pages;
-};
-} // namespace
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-    auto budget = read<uint>();
-    auto inputs = std::vector<Input>(n);
+    unsigned N;
+    unsigned BUDGET;
     {
-        for (auto &input : inputs) {
-            input.price = read<uint>();
+        std::cin >> N >> BUDGET;
+    }
+    struct Book {
+        unsigned price;
+        unsigned num_pages;
+    };
+    auto books = std::vector<Book>(N);
+    {
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> books[i].price;
         }
-        for (auto &input : inputs) {
-            input.num_pages = read<uint>();
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> books[i].num_pages;
         }
     }
 
-    // (ref.) [0-1 knapsack problem](https://www.wikiwand.com/en/articles/Knapsack_problem)
-
-    auto price_to_max_num_pages = std::vector<uint>(budget + 1, 0);
+    auto budget_to_max_num_pages = std::vector<unsigned>(BUDGET + 1, 0);
     {
-        for (auto const &input : inputs) {
-            if (input.price <= budget) {
-                for (
-                    auto curr_total_price : iota(input.price, budget + 1) |
-                                                std::views::reverse // update in reverse order so that `price_to_max_num_pages[curr_total_price - input.price]` will not include the current book
-                ) {
-                    price_to_max_num_pages[curr_total_price] = std::max(
-                        price_to_max_num_pages[curr_total_price],
-                        price_to_max_num_pages[curr_total_price - input.price] + input.num_pages
-                    );
-                }
+        for (auto const &[price, num_pages] : books) {
+            for (unsigned budget = BUDGET; budget >= price; budget--) {
+                budget_to_max_num_pages[budget] = std::max(
+                    budget_to_max_num_pages[budget],
+                    budget_to_max_num_pages[budget - price] + num_pages
+                );
             }
         }
     }
-    std::cout << price_to_max_num_pages[budget] << '\n';
+    std::cout << budget_to_max_num_pages[BUDGET] << '\n';
 }

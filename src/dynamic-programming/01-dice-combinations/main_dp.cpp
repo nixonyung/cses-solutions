@@ -1,49 +1,37 @@
-#include "utils.hpp"
+#include <iostream>
+#include <vector>
+
+namespace {
+const unsigned NUM_DICE_FACES = 6;
+const unsigned long MOD = 1e9 + 7;
+} // namespace
 
 int main() {
-    const ulong MOD = 1e9 + 7;
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    enable_fast_io();
-
-    auto n = read<uint>();
-
+    unsigned N;
     {
-        auto prev_num_ways = std::vector<ulong>{
-            1,                      // 1
-            1 + 1,                  // mem[1] + 1
-            2 + 1 + 1,              // mem[2] + mem[1] + 1
-            4 + 2 + 1 + 1,          // mem[3] + mem[2] + mem[1] + 1
-            8 + 4 + 2 + 1 + 1,      // mem[4] + mem[3] + mem[2] + mem[1] + 1
-            16 + 8 + 4 + 2 + 1 + 1, // mem[5] + mem[4] + mem[3] + mem[2] + mem[1] + 1
-        };
-        switch (n) {
-        case 1:
-            std::cout << prev_num_ways[0] << '\n';
-            break;
-        case 2:
-            std::cout << prev_num_ways[1] << '\n';
-            break;
-        case 3:
-            std::cout << prev_num_ways[2] << '\n';
-            break;
-        case 4:
-            std::cout << prev_num_ways[3] << '\n';
-            break;
-        case 5:
-            std::cout << prev_num_ways[4] << '\n';
-            break;
-        case 6:
-            std::cout << prev_num_ways[5] << '\n';
-            break;
-        default:
-            ulong curr_num_ways = prev_num_ways[0] + prev_num_ways[1] + prev_num_ways[2] + prev_num_ways[3] + prev_num_ways[4] + prev_num_ways[5];
-            for (auto _ : iota(8U, n + 1)) {
-                std::ranges::rotate(prev_num_ways, prev_num_ways.begin() + 1);
-                prev_num_ways.back() = curr_num_ways;
-                curr_num_ways = (prev_num_ways[0] + prev_num_ways[1] + prev_num_ways[2] + prev_num_ways[3] + prev_num_ways[4] + prev_num_ways[5]) % MOD;
-            }
-            std::cout << curr_num_ways << '\n';
-            break;
+        std::cin >> N;
+    }
+
+    auto num_wayss = std::vector<unsigned long>(NUM_DICE_FACES); // optimization: num_ways to get sum=k is `num_wayss[k % NUM_DICE_FACES]`
+    {
+        unsigned long num_wayss_sum = 0;
+        for (unsigned i = 0; i < N; i++) {
+            num_wayss_sum = (num_wayss_sum + MOD
+                             - num_wayss[i % NUM_DICE_FACES]
+                             + (num_wayss[i % NUM_DICE_FACES] = (i == 0)
+                                                                    // the only way is to throw a "1"
+                                                                    ? 1
+                                                                    : (i < NUM_DICE_FACES)
+                                                                          // throw a `i` directly or need to rethrow once
+                                                                          ? 1 + num_wayss_sum
+                                                                          // need more than one rethrows
+                                                                          : num_wayss_sum
+                             ))
+                            % MOD;
         }
     }
+    std::cout << num_wayss[(N - 1) % NUM_DICE_FACES] << '\n';
 }

@@ -1,30 +1,34 @@
-#include "utils.hpp"
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-    auto target = read<uint>();
-    auto coins = std::vector<uint>(n);
+    unsigned N;
+    unsigned TARGET;
     {
-        for (auto &coin : coins) {
-            coin = read<uint>();
+        std::cin >> N >> TARGET;
+    }
+    auto coins = std::vector<unsigned>(N);
+    {
+        for (unsigned i = 0; i < N; i++) {
+            std::cin >> coins[i];
         }
+        std::ranges::stable_sort(coins); // worse time complexity but improves caching and branch prediction
     }
 
-    auto min_num_coins = std::vector<uint>(target + 1, std::numeric_limits<uint>::max());
+    auto min_num_coinss = std::vector<unsigned>(TARGET + 1, -1U);
     {
-        min_num_coins[0] = 0; // initial condition
+        min_num_coinss[0] = 0;
 
-        for (auto curr_target : iota(1U, target + 1)) {
+        for (unsigned target = 1; target <= TARGET; target++) {
             for (auto const &coin : coins) {
-                if (coin <= curr_target && min_num_coins[curr_target - coin] != std::numeric_limits<uint>::max()) {
-                    min_num_coins[curr_target] = std::min(min_num_coins[curr_target], 1 + min_num_coins[curr_target - coin]);
-                }
+                if (coin > target || min_num_coinss[target - coin] == -1U) continue;
+                min_num_coinss[target] = std::min(min_num_coinss[target], 1 + min_num_coinss[target - coin]);
             }
         }
     }
-    std::cout << ((min_num_coins[target] < std::numeric_limits<uint>::max()) ? (int)min_num_coins[target]
-                                                                             : -1)
-              << '\n';
+    std::cout << (int)min_num_coinss[TARGET] << '\n';
 }

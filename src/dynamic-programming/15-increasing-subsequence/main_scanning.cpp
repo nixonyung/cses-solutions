@@ -1,32 +1,40 @@
-#include "utils.hpp"
+// (ref.) [Longest increasing subsequence](https://www.wikiwand.com/en/articles/Longest_increasing_subsequence#Efficient_algorithms)
+
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 int main() {
-    enable_fast_io();
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
 
-    auto n = read<uint>();
-
-    // (ref.) [Longest increasing subsequence](https://www.wikiwand.com/en/articles/Longest_increasing_subsequence#Efficient_algorithms)
-
-    auto length_to_min_ending_number = std::vector<uint>();
+    unsigned N;
     {
-        length_to_min_ending_number.reserve(n);
-        for (auto _ : iota(0U, n)) {
-            uint number = read<uint>();
+        std::cin >> N;
+    }
 
-            // find the length of the longest subsequence `number` can form
-            // by finding the largest "ending number" < number
-            auto it = std::ranges::lower_bound(length_to_min_ending_number, number);
-            if (it == length_to_min_ending_number.end()) {
-                // number > any "ending number" -> can append number to curr longest subsequence
-                length_to_min_ending_number.push_back(number);
-            } else {
-                // number can append to the subsequence ending with number *(it-1),
-                // so *it = min(*it, number)
-                //
-                // optimization: we know *it >= number because of `lower_bound`
+    unsigned max_subarray_len = 0;
+    {
+        auto len_to_min_ending_number = std::vector<unsigned>(N, -1U);
+        {
+            len_to_min_ending_number[0] = 0;
+
+            unsigned number;
+            for (unsigned i = 0; i < N; i++) {
+                std::cin >> number;
+
+                /*
+                We want to find the largest `len` where the corresponding `ending_number` < `number`,
+                then update len_to_min_ending_number[len+1] = number.
+
+                optimization: finding `len+1` is equivalent to finding the smallest `len2` where the corresponding `ending_number` >= `number`
+                optimization: len_to_min_ending_number must be an increasing sequence, so we can use binary search
+                */
+                auto it = std::ranges::lower_bound(len_to_min_ending_number, number);
                 *it = number;
+                max_subarray_len = std::max(max_subarray_len, (unsigned)(it - len_to_min_ending_number.begin()));
             }
         }
     }
-    std::cout << length_to_min_ending_number.size() << '\n';
+    std::cout << max_subarray_len << '\n';
 }
