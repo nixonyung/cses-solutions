@@ -62,5 +62,6 @@
   - [Goto out of a block: do destructors get called?](https://stackoverflow.com/questions/3179936/goto-out-of-a-block-do-destructors-get-called)
   - [How can I be sure a routine is taking advantage of (N)RVO?](https://stackoverflow.com/questions/9621720/how-can-i-be-sure-a-routine-is-taking-advantage-of-nrvo)
   - [Function or functor for std::sort?](https://softwarebits.substack.com/p/function-or-functor-for-stdsort)
+  - [Considering the performance implications of converting recursion to an explicit stack](http://devblogs.microsoft.com/oldnewthing/20180927-00/?p=99835)
 - [TODO] C++23 features
   - [How to make a recursive lambda](https://stackoverflow.com/a/40873657)

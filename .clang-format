@@ -4,8 +4,12 @@ IndentWidth: 4
 AlignArrayOfStructures: Left
 AlignAfterOpenBracket: BlockIndent
 AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossComments: true
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortLoopsOnASingleLine: true
 BinPackArguments: false
 BinPackParameters: false
-BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBinaryOperators: None

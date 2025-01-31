@@ -3,7 +3,7 @@ from pathlib import Path
 
 import graphviz  # type:ignore
 
-OUT_DIR = Path("/out")
+OUT_DIR = Path("./out")
 
 
 if __name__ == "__main__":
@@ -24,13 +24,12 @@ if __name__ == "__main__":
         },
     )
 
-    for edge in Path(sys.argv[1]).read_text().splitlines()[1:]:
-        tokens = edge.split()
-        src = str(int(tokens[0]) - 1)
-        dest = str(int(tokens[1]) - 1)
-        weight = None
-        if len(tokens) >= 3:
-            weight = tokens[2]
-
-        g.edge(src, dest, xlabel=weight)
-    g.render(directory=OUT_DIR)
+    for line in Path(sys.argv[1]).read_text().splitlines()[1:]:
+        tokens = line.split()
+        if len(tokens) == 2:
+            g.edge(tokens[0], tokens[1])  # type:ignore
+        elif len(tokens) == 3:
+            g.edge(tokens[0], tokens[1], xlabel=tokens[2])  # type:ignore
+        else:
+            raise Exception(f"unexpected edge format: got {len(tokens)} tokens")
+    g.render(directory=OUT_DIR)  # type:ignore
